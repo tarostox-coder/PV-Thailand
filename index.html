@@ -1079,7 +1079,7 @@ function renderCharts(d){
   dChart=new Chart(document.getElementById("donut-chart"),{
     type:"doughnut",
     data:{labels:cats,datasets:[{data:cats.map(c=>d.filter(x=>classify(x.status)===c).length),backgroundColor:dc,borderWidth:2,borderColor:"#fff",hoverOffset:6}]},
-    options:{plugins:{legend:{display:false},tooltip:{callbacks:{label:ctx=>`${ctx.label}: ${ctx.raw} โครงการ`}}},cutout:"55%",animation:{animateRotate:true}}
+    options:{plugins:{legend:{display:false},datalabels:{display:false},tooltip:{callbacks:{label:ctx=>`${ctx.label}: ${ctx.raw} โครงการ`}}},cutout:"55%",animation:{animateRotate:true}}
   });
   document.getElementById("donut-legend").innerHTML=cats.map((c,i)=>`<div style="display:flex;align-items:center;gap:5px"><div style="width:10px;height:10px;border-radius:50%;background:${dc[i]}"></div><span>${c}: <b style="color:${dc[i]}">${d.filter(x=>classify(x.status)===c).length}</b></span></div>`).join("");
 
@@ -1108,7 +1108,7 @@ function renderCharts(d){
         type:"doughnut",
         data:{labels:rawLabels,datasets:[{data:filteredCounts,backgroundColor:rawLabels.map((_,i)=>palette[i%palette.length]),borderWidth:2,borderColor:"#fff",hoverOffset:6}]},
         options:{
-          plugins:{legend:{display:false},tooltip:{callbacks:{label:ctx=>`${ctx.label}: ${ctx.raw} โครงการ (กดเพื่อกรอง)`}}},
+          plugins:{legend:{display:false},datalabels:{display:false},tooltip:{callbacks:{label:ctx=>`${ctx.label}: ${ctx.raw} โครงการ (กดเพื่อกรอง)`}}},
           cutout:"55%",
           animation:{animateRotate:true},
           onHover:(e,el)=>{e.native.target.style.cursor=el.length?"pointer":"default";},
@@ -1214,7 +1214,7 @@ function renderCharts(d){
   aChart=new Chart(document.getElementById("area-chart"),{
     type:"line",
     data:{labels:pts.map(p=>p.x),datasets:[{data:pts.map(p=>p.y),fill:true,backgroundColor:"rgba(14,165,233,.15)",borderColor:"#0ea5e9",borderWidth:2,pointRadius:0,tension:0.4}]},
-    options:{plugins:{legend:{display:false},tooltip:{callbacks:{label:ctx=>ctx.raw.toLocaleString()+" kWp (Cumulative)"}}},scales:{x:{ticks:{font:{size:10},maxTicksLimit:12},grid:{color:"#f1f5f9"}},y:{ticks:{font:{size:10}},grid:{color:"#f1f5f9"}}},animation:{duration:400}}
+    options:{plugins:{legend:{display:false},datalabels:{display:false},tooltip:{callbacks:{label:ctx=>ctx.raw.toLocaleString()+" kWp (Cumulative)"}}},scales:{x:{ticks:{font:{size:10},maxTicksLimit:12},grid:{color:"#f1f5f9"}},y:{ticks:{font:{size:10}},grid:{color:"#f1f5f9"}}},animation:{duration:400}}
   });
 }
 
@@ -2518,7 +2518,7 @@ function drawCharts(d){
       data:{labels:cats,datasets:[{data:cats.map(c=>d.filter(x=>cl(x.status)===c).length),backgroundColor:dc,borderWidth:2,borderColor:"#fff",hoverOffset:6}]},
       options:{
         maintainAspectRatio:false,
-        plugins:{legend:{display:false},tooltip:{callbacks:{label:ctx=>\`\${ctx.label}: \${ctx.raw} โครงการ (กดเพื่อกรอง)\`}}},
+        plugins:{legend:{display:false},datalabels:{display:false},tooltip:{callbacks:{label:ctx=>\`\${ctx.label}: \${ctx.raw} โครงการ (กดเพื่อกรอง)\`}}},
         cutout:"55%",
         onHover:(e,el)=>{e.native.target.style.cursor=el.length?"pointer":"default";},
         onClick:(e,elements)=>{
@@ -2575,7 +2575,7 @@ function drawCharts(d){
         type:"doughnut",
         data:{labels:rawLabels,datasets:[{data:filteredCounts,backgroundColor:rawLabels.map((_,i)=>palette[i%palette.length]),borderWidth:2,borderColor:"#fff",hoverOffset:6}]},
         options:{maintainAspectRatio:false,
-          plugins:{legend:{display:false},tooltip:{callbacks:{label:ctx=>\`\${ctx.label}: \${ctx.raw} โครงการ (กดเพื่อกรอง)\`}}},
+          plugins:{legend:{display:false},datalabels:{display:false},tooltip:{callbacks:{label:ctx=>\`\${ctx.label}: \${ctx.raw} โครงการ (กดเพื่อกรอง)\`}}},
           cutout:"55%",
           onHover:(e,el)=>{e.native.target.style.cursor=el.length?"pointer":"default";},
           onClick:(e,elements)=>{
@@ -2641,7 +2641,7 @@ function drawCharts(d){
     if(aChart)aChart.destroy();
     aChart=new Chart(el3,{type:"line",
       data:{labels:pts.map(p=>p.x),datasets:[{data:pts.map(p=>p.y),fill:true,backgroundColor:"rgba(14,165,233,.12)",borderColor:"#0ea5e9",borderWidth:2,pointRadius:0,tension:0.4}]},
-      options:{maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{ticks:{font:{size:9},maxTicksLimit:10},grid:{color:"#f1f5f9"}},y:{ticks:{font:{size:9}},grid:{color:"#f1f5f9"}}}}
+      options:{maintainAspectRatio:false,plugins:{legend:{display:false},datalabels:{display:false}},scales:{x:{ticks:{font:{size:9},maxTicksLimit:10},grid:{color:"#f1f5f9"}},y:{ticks:{font:{size:9}},grid:{color:"#f1f5f9"}}}}
     });
   }
 }
