@@ -107,9 +107,9 @@ tr:hover td{background:#eff6ff!important}
 .chart-row .card{display:flex;flex-direction:column}
 /* 5: Chart Standardization — equal columns + fixed-height boxes (no aspect-ratio ballooning) */
 .chart-row{grid-template-columns:1fr 1fr}
+/* V28 fix: box keeps its height (flex:0 0 auto) + clips overflow, so the chart can't bleed
+   onto the legend below — while Chart.js keeps full control of canvas sizing (round donuts) */
 .pv-chart-box{position:relative;width:100%;flex:0 0 auto;overflow:hidden}
-/* V28 fix: lock canvas inside its box so it can never overflow onto the legend/text below */
-.pv-chart-box>canvas{position:absolute;top:0;left:0;width:100%!important;height:100%!important}
 .pv-h-donut{height:300px}
 .pv-h-bar{height:480px}
 .pv-h-area{height:200px}
@@ -2241,7 +2241,7 @@ body{font-family:'Sarabun','Noto Sans Thai',sans-serif;background:#f0f4f8;min-he
 .chart-wrap{position:relative;width:100%;height:240px;overflow:hidden}
 .chart-wrap.tall{height:620px}
 .chart-wrap.small{height:200px}
-.chart-wrap canvas{position:absolute;top:0;left:0;display:block;width:100%!important;height:100%!important}
+.chart-wrap canvas{display:block;width:100%!important;height:100%!important}
 table{width:100%;border-collapse:collapse;font-size:11px}
 th{padding:7px 8px;text-align:left;color:#64748b;font-weight:700;border-bottom:2px solid #e2e8f0;white-space:nowrap;background:#f8fafc;cursor:pointer;user-select:none}
 th:hover{background:#f1f5f9}
