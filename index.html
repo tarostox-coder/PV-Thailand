@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>☀️ PV Project Dashboard 2025–2026 (V24 · 2-Layer Status)</title>
+<title>☀️ PV Project Dashboard 2025–2026 (V28 · 2-Layer Status)</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
@@ -171,6 +171,34 @@ body.pv-presenting #pv-pres-flag{display:flex}
   #exec-grid .card{font-size:15px}
   .pv-h-donut{height:400px}.pv-h-bar{height:640px}.pv-h-area{height:280px}
 }
+/* ════════ PHASE 4 — V28 Executive Polish & Stabilization (UI ONLY, additive) ════════ */
+/* B/M: System Information collapsible inside LIVE DATA STATUS */
+.pv-sysinfo{margin-top:8px;border-top:1px dashed #e2e8f0;padding-top:6px}
+.pv-sysinfo>summary{cursor:pointer;font-size:12px;font-weight:700;color:#0369a1;list-style:none;user-select:none;display:flex;align-items:center;gap:6px}
+.pv-sysinfo>summary::-webkit-details-marker{display:none}
+.pv-sysinfo>summary::before{content:"▸";font-size:11px;transition:transform .15s}
+.pv-sysinfo[open]>summary::before{transform:rotate(90deg)}
+/* C: Executive metrics strip — same grid rhythm as KPI row (visual consistency) */
+#pv-exec-metrics{display:grid;grid-template-columns:repeat(auto-fit,minmax(168px,1fr));gap:14px;margin-bottom:18px;align-items:stretch}
+#pv-exec-metrics .pv-em{background:#fff;border-radius:14px;padding:16px 20px;box-shadow:var(--pv-shadow);border-top:4px solid var(--c,#1d4ed8);display:flex;flex-direction:column;min-width:0}
+.pv-em-l{font-size:11px;color:#64748b;font-weight:700;letter-spacing:.4px;text-transform:uppercase;margin-bottom:6px}
+.pv-em-v{font-size:24px;font-weight:900;color:#1e293b;line-height:1.1;overflow-wrap:anywhere}
+.pv-em-s{font-size:11px;color:#94a3b8;margin-top:auto;padding-top:3px}
+/* F: Predictive action panel */
+#pv-actions .pv-act-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:10px;margin-top:12px}
+.pv-act-cat{border:1px solid #e2e8f0;border-radius:11px;padding:12px 14px;background:#fff}
+.pv-act-cat h4{font-size:13px;font-weight:800;margin-bottom:8px;display:flex;align-items:center;justify-content:space-between;gap:8px}
+.pv-act-sev{font-size:10px;font-weight:800;border-radius:20px;padding:1px 9px;text-transform:uppercase;letter-spacing:.3px;white-space:nowrap}
+.pv-sev-high{background:#fef2f2;color:#dc2626;border:1px solid #fca5a5}
+.pv-sev-med{background:#fff7ed;color:#c2410c;border:1px solid #fed7aa}
+.pv-sev-low{background:#f0f9ff;color:#0369a1;border:1px solid #bae6fd}
+.pv-act-item{font-size:12px;color:#334155;padding:5px 8px;border-radius:7px;cursor:pointer;display:flex;justify-content:space-between;gap:8px;transition:background .12s}
+.pv-act-item:hover{background:#f1f5f9}
+.pv-act-item .pv-act-tag{color:#94a3b8;font-size:11px;white-space:nowrap}
+.pv-act-empty{font-size:13px;color:#16a34a;font-weight:700;padding:6px 2px}
+.pv-act-more{font-size:11px;color:#64748b;margin-top:4px}
+@media(min-width:1921px){#pv-exec-metrics .pv-em-v{font-size:38px}.pv-em-l,.pv-em-s{font-size:14px}.pv-act-cat h4{font-size:16px}}
+@media(max-width:640px){#pv-exec-metrics{grid-template-columns:1fr 1fr}#pv-actions .pv-act-grid{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
@@ -179,7 +207,7 @@ body.pv-presenting #pv-pres-flag{display:flex}
   <div class="header-top">
     <div class="h-title">
       <span style="font-size:28px">☀️</span>
-      <div><h1>PV PROJECT DASHBOARD</h1><p id="today-lbl">2025–2026 | Executive Overview · V24 (2-Layer Status System)</p></div>
+      <div><h1>PV PROJECT DASHBOARD</h1><p id="today-lbl">2025–2026 | Executive Overview · V28 (2-Layer Status System)</p></div>
     </div>
     <div id="header-badges" style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
       <span class="badge" id="schema-badge" style="background:rgba(34,197,94,.3);display:none"></span>
@@ -2230,6 +2258,8 @@ tfoot tr td{background:linear-gradient(90deg,#f0f9ff,#faf5ff)!important;border-t
 .etab{display:none}.etab.active{display:block}
 .foot{text-align:center;font-size:10px;color:#94a3b8;padding:12px;border-top:1px solid #e2e8f0;margin-top:6px}
 @media(max-width:600px){.crow{grid-template-columns:1fr}.kpi{min-width:110px}.kval{font-size:18px}.gl{width:100px}.gst{display:none}.hdr-st{display:none}.chart-wrap{height:200px}}
+/* V28 — presentation-ready print/PDF: prevent card & chart cut-off, drop interactive UI */
+@media print{body{background:#fff;-webkit-print-color-adjust:exact;print-color-adjust:exact}.no-print{display:none!important}.card{page-break-inside:avoid;box-shadow:none;border:1px solid #e2e8f0}.crow{grid-template-columns:1fr 1fr}.chart-wrap{height:300px}.chart-wrap.tall{height:520px}.ov,.gsc{overflow:visible}table{font-size:10px}tr{page-break-inside:avoid}.hdr{-webkit-print-color-adjust:exact;print-color-adjust:exact}@page{size:A4 landscape;margin:9mm}}
 </style>
 </head>
 <body>
@@ -3198,17 +3228,22 @@ function renderExecPanel(q){
   const el=document.getElementById("exec-panel-body"); if(!el) return;
   q=q||__EXQ||{total:0};
   const sb=statusBadge();
-  const rows=[
+  // V28 — executive-first: core rows visible, technical detail collapsed (Phase B)
+  const core=[
     ["Source", sourceLabel()],
     ["Records", q.total+" Projects"],
-    ["Last Sync", LAST_SYNC_TIME?new Date(LAST_SYNC_TIME).toLocaleString("th-TH"):"—"],
+    ["Last Sync", LAST_SYNC_TIME?new Date(LAST_SYNC_TIME).toLocaleString("th-TH"):"—"]
+  ];
+  const tech=[
     ["Last Modified", SYNC_LAST_MOD_TIME?new Date(SYNC_LAST_MOD_TIME).toLocaleString("th-TH"):"—"],
     ["Updated By", SYNC_LAST_EDITOR||"Unknown"],
     ["Data Age", dataAgeText(SYNC_LAST_MOD_TIME||LAST_SYNC_TIME)],
-    ["Version", "V25"]
+    ["Version", "V28"]
   ];
-  el.innerHTML = rows.map(r=>`<div style="display:flex;justify-content:space-between;gap:10px;padding:3px 0;border-bottom:1px dashed #e2e8f0"><span style="color:#94a3b8">${r[0]}</span><b style="color:#1e293b;text-align:right">${r[1]}</b></div>`).join("")
-    + `<div style="display:flex;justify-content:space-between;gap:10px;padding:6px 0 0"><span style="color:#94a3b8">Status</span><b style="color:${sb.c}">${sb.t}</b></div>`;
+  const rowHtml=r=>`<div style="display:flex;justify-content:space-between;gap:10px;padding:3px 0;border-bottom:1px dashed #e2e8f0"><span style="color:#94a3b8">${r[0]}</span><b style="color:#1e293b;text-align:right">${r[1]}</b></div>`;
+  el.innerHTML = core.map(rowHtml).join("")
+    + `<div style="display:flex;justify-content:space-between;gap:10px;padding:6px 0"><span style="color:#94a3b8">Status</span><b style="color:${sb.c}">${sb.t}</b></div>`
+    + `<details class="pv-sysinfo"><summary>🔧 System Information</summary><div style="margin-top:6px">${tech.map(rowHtml).join("")}</div></details>`;
 }
 
 // ══ PART 7 + 10: Executive KPI cards (Data Quality + Dashboard Health) ══════
@@ -3736,6 +3771,114 @@ setInterval(()=>{ try{ renderExecPanel(__EXQ); renderLiveBadges(__EXQ); HEALTH_S
   if(typeof renderAll==="function"){
     var _origRenderAll=renderAll;
     renderAll=function(){ var r=_origRenderAll.apply(this,arguments); try{ relocateMissing(); addFsButtons(); fixCharts(); }catch(e){} return r; };
+  }
+})();
+
+// ══════════════════════════════════════════════════════════════════════════
+// ║  PHASE 4 — V28 EXECUTIVE POLISH & STABILIZATION  (UI only, additive)     ║
+// ║  Version standardization · Executive metrics · Predictive action panel   ║
+// ║  Reuses existing globals (FILTERED/ALL/classify/isEmptyVal/fmt/escapeHtml)║
+// ══════════════════════════════════════════════════════════════════════════
+(function PHASE4(){
+  var VERSION="V28";
+  // ── M: Version standardization (visible labels only — no cache logic change) ─
+  try{
+    if(/V2[0-9]/.test(document.title)) document.title=document.title.replace(/V2[0-9]/,VERSION);
+    var sub=document.getElementById("today-lbl");
+    if(sub && /V2[0-9]/.test(sub.textContent)) sub.textContent=sub.textContent.replace(/V2[0-9]/,VERSION);
+  }catch(e){}
+
+  // ── shared helpers (defensive — degrade gracefully if a global is absent) ──
+  function rows(){ try{ return (typeof FILTERED!=="undefined"&&FILTERED&&FILTERED.length)?FILTERED:((typeof ALL!=="undefined"&&ALL)?ALL:[]); }catch(e){ return []; } }
+  function L1(x){ return (typeof classify==="function")?classify(x.status):(x.status||""); }
+  function empty(v){ return (typeof isEmptyVal==="function")?isEmptyVal(v):(v==null||String(v).trim()===""||String(v).trim()==="-"); }
+  function esc(s){ return (typeof escapeHtml==="function")?escapeHtml(s):String(s==null?"":s); }
+  function fmtN(n,dg){ return (typeof fmt==="function")?fmt(n,dg):(n==null?"—":Number(n).toLocaleString("th-TH",{maximumFractionDigits:dg||0})); }
+  function parseDate(v){ if(!v) return null; var d=new Date(v); return isNaN(d.getTime())?null:d; }
+  // follow-up date is an extra column (e.g. "วันที่ Follow Up"), stored in _extra as YYYY-MM-DD
+  function followupOf(x){
+    if(x.followup) return x.followup;
+    var ex=x._extra; if(!ex) return null;
+    var k=Object.keys(ex).find(function(kk){ return kk.toLowerCase().indexOf("follow")>-1; });
+    return k?ex[k]:null;
+  }
+
+  // ── C: Executive metrics strip (additive, derived from existing fields) ───
+  function buildMetrics(){
+    var kr=document.getElementById("kpi-row"); if(!kr) return;
+    var host=document.getElementById("pv-exec-metrics");
+    if(!host){ host=document.createElement("div"); host.id="pv-exec-metrics"; kr.parentNode.insertBefore(host, kr.nextSibling); }
+    var d=rows(), total=d.length;
+    if(!total){ host.style.display="none"; return; }
+    host.style.display="grid";
+    var win=d.filter(function(x){return L1(x)==="Win";}).length;
+    var conv=Math.round(win/total*100);
+    var kwps=d.map(function(x){return +x.kwp;}).filter(function(n){return !isNaN(n)&&n>0;});
+    var avgKwp=kwps.length?kwps.reduce(function(a,b){return a+b;},0)/kwps.length:0;
+    var vals=d.map(function(x){return +x.value;}).filter(function(n){return !isNaN(n)&&n>0;});
+    var avgVal=vals.length?vals.reduce(function(a,b){return a+b;},0)/vals.length:0;
+    var prop=d.filter(function(x){ return L1(x)==="Bidding" && /proposal/i.test(String(x.sub_status||"")); }).length;
+    var cards=[
+      {l:"Pipeline Conversion",v:conv+"%",s:win+" Win / "+total+" total",c:"#8b5cf6"},
+      {l:"Avg Project Size",v:kwps.length?fmtN(avgKwp,0)+" kWp":"—",s:kwps.length+" projects w/ kWp",c:"#0ea5e9"},
+      {l:"Avg Deal Value",v:vals.length?"฿"+fmtN(avgVal,0):"—",s:vals.length+" projects w/ value",c:"#22c55e"},
+      {l:"Proposal Outstanding",v:String(prop),s:"Bidding · proposal stage",c:"#f59e0b"}
+    ];
+    host.innerHTML=cards.map(function(k){
+      return '<div class="pv-em" style="--c:'+k.c+'"><div class="pv-em-l">'+esc(k.l)+'</div><div class="pv-em-v">'+esc(k.v)+'</div><div class="pv-em-s">'+esc(k.s)+'</div></div>';
+    }).join("");
+  }
+
+  // ── F: Predictive action panel (simple rule-based, severity Low/Med/High) ─
+  function buildActions(){
+    var tab=document.getElementById("tab-alerts"); if(!tab) return;
+    var host=document.getElementById("pv-actions");
+    if(!host){ host=document.createElement("div"); host.id="pv-actions"; host.className="card"; tab.insertBefore(host, tab.firstChild); }
+    var d=rows();
+    var now=new Date(); now.setHours(0,0,0,0);
+    var cat={
+      followup:{title:"⏰ Follow-Up Overdue",sev:"high",items:[]},
+      proposal:{title:"📄 Proposal Outstanding",sev:"med",items:[]},
+      lead:{title:"👤 Missing Lead Sale",sev:"med",items:[]},
+      engineer:{title:"🛠 Missing Engineer",sev:"low",items:[]},
+      contract:{title:"📑 Missing Contract Type",sev:"low",items:[]}
+    };
+    d.forEach(function(x){
+      var l1=L1(x), active=(l1==="Bidding"||l1==="Hold"||l1==="Win");
+      if(!active) return;
+      var fu=parseDate(followupOf(x));
+      if(fu){ var days=Math.round((now-fu)/86400000); if(days>0) cat.followup.items.push({name:x.name,tag:days+"d overdue"}); }
+      if(l1==="Bidding" && /proposal/i.test(String(x.sub_status||""))) cat.proposal.items.push({name:x.name,tag:String(x.sub_status||"Proposal")});
+      if(empty(x.lead)) cat.lead.items.push({name:x.name,tag:l1});
+      if(l1==="Win" && empty(x.engineer)) cat.engineer.items.push({name:x.name,tag:l1});
+      if(empty(x.contract)) cat.contract.items.push({name:x.name,tag:l1});
+    });
+    var keys=Object.keys(cat).filter(function(k){return cat[k].items.length;});
+    var totalN=keys.reduce(function(a,k){return a+cat[k].items.length;},0);
+    var sevClass={high:"pv-sev-high",med:"pv-sev-med",low:"pv-sev-low"};
+    var body;
+    if(!totalN){
+      body='<div class="pv-act-empty">✅ ไม่มีรายการที่ต้องดำเนินการเร่งด่วน — ข้อมูลโครงการครบถ้วน</div>';
+    } else {
+      body='<div class="pv-act-grid">'+keys.map(function(k){
+        var c=cat[k], top=c.items.slice(0,6);
+        var lis=top.map(function(it){
+          return '<div class="pv-act-item" onclick=\'(window.jumpToProject||function(){})('+JSON.stringify(String(it.name))+')\'><span>'+esc(it.name)+'</span><span class="pv-act-tag">'+esc(it.tag)+'</span></div>';
+        }).join("");
+        var more=c.items.length>top.length?'<div class="pv-act-more">+ '+(c.items.length-top.length)+' more…</div>':"";
+        return '<div class="pv-act-cat"><h4>'+c.title+'<span class="pv-act-sev '+sevClass[c.sev]+'">'+c.sev+' · '+c.items.length+'</span></h4>'+lis+more+'</div>';
+      }).join("")+'</div>';
+    }
+    host.innerHTML='<div class="card-title">🎯 Action Required <span style="font-weight:400;color:#94a3b8;font-size:12px">(สรุปรายการที่ควรติดตาม — กดชื่อโครงการเพื่อไปยังแถวในตาราง)</span></div>'+body;
+  }
+
+  function refresh(){ try{ buildMetrics(); }catch(e){} try{ buildActions(); }catch(e){} }
+
+  // initial paint + refresh after every dashboard render (chained, no logic change)
+  if(document.readyState!=="loading") refresh(); else document.addEventListener("DOMContentLoaded",refresh);
+  if(typeof renderAll==="function"){
+    var _p4=renderAll;
+    renderAll=function(){ var r=_p4.apply(this,arguments); try{ refresh(); }catch(e){} return r; };
   }
 })();
 
