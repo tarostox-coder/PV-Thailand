@@ -129,18 +129,18 @@ tr:hover td{background:#eff6ff!important}
 .pv-sk-l{font-size:9px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:.3px;white-space:nowrap}
 .pv-sk-v{font-size:16px;font-weight:900;color:#1e293b;line-height:1.15;white-space:nowrap}
 /* 1: Missing Information Accordion */
-#missing-panel{padding:0;overflow:hidden;border:1px solid #fecaca;margin-top:18px}
-.pv-acc-head{width:100%;border:none;background:linear-gradient(135deg,#fff5f5,#fff);color:#b91c1c;font-family:inherit;font-weight:800;font-size:15px;padding:16px 20px;cursor:pointer;display:flex;align-items:center;justify-content:space-between;gap:10px}
-.pv-acc-head:hover{background:#fef2f2}
-.pv-acc-count{background:#dc2626;color:#fff;border-radius:20px;font-size:12px;font-weight:800;padding:1px 11px;margin-left:6px}
-.pv-acc-chevron{font-size:12px;color:#dc2626}
+#missing-panel{padding:0;overflow:hidden;border:1px solid #fde68a;margin-top:18px}
+.pv-acc-head{width:100%;border:none;background:linear-gradient(135deg,#fffbeb,#fff);color:#92400e;font-family:inherit;font-weight:800;font-size:15px;padding:16px 20px;cursor:pointer;display:flex;align-items:center;justify-content:space-between;gap:10px}
+.pv-acc-head:hover{background:#fffbeb}
+.pv-acc-count{background:#d97706;color:#fff;border-radius:20px;font-size:12px;font-weight:800;padding:1px 11px;margin-left:6px}
+.pv-acc-chevron{font-size:12px;color:#d97706}
 .pv-acc-body{padding:4px 18px 18px}
 .pv-miss-hint{font-size:12px;color:#94a3b8;margin:6px 0 12px}
-.pv-miss-list{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:8px;max-height:340px;overflow:auto}
-.pv-miss-item{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:9px 13px;border:1px solid #fee2e2;background:#fff;border-radius:9px;cursor:pointer;transition:all .15s}
-.pv-miss-item:hover{background:#fef2f2;border-color:#fca5a5}
+.pv-miss-list{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:8px;max-height:360px;overflow:auto;padding-right:2px}
+.pv-miss-item{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:10px 13px;border:1px solid #fde68a;background:#fff;border-radius:9px;cursor:pointer;transition:all .15s}
+.pv-miss-item:hover{background:#fffbeb;border-color:#fcd34d}
 .pv-miss-name{font-weight:700;color:#1e293b;font-size:13px}
-.pv-miss-tag{font-size:11px;color:#dc2626;font-weight:600;text-align:right}
+.pv-miss-tag{font-size:11px;color:#b45309;font-weight:600;text-align:right}
 /* 2: temporary row highlight after navigate */
 @keyframes pvRowHL{0%{background:#fde68a}60%{background:#fef3c7}100%{background:transparent}}
 tr.pv-row-hl td{animation:pvRowHL 2.6s ease;background:#fef3c7!important;box-shadow:inset 3px 0 0 #f59e0b}
@@ -201,6 +201,19 @@ body.pv-presenting #pv-pres-flag{display:flex}
 .pv-act-more{font-size:11px;color:#64748b;margin-top:4px}
 @media(min-width:1921px){#pv-exec-metrics .pv-em-v{font-size:38px}.pv-em-l,.pv-em-s{font-size:14px}.pv-act-cat h4{font-size:16px}}
 @media(max-width:640px){#pv-exec-metrics{grid-template-columns:1fr 1fr}#pv-actions .pv-act-grid{grid-template-columns:1fr}}
+/* K: Executive Presentation Mode — boardroom / TV typography (scoped to .pv-presenting, additive) */
+body.pv-presenting .body{max-width:1800px;margin:0 auto;padding:26px 44px}
+body.pv-presenting .fbar{display:none}
+body.pv-presenting .kpi{padding:22px 24px}
+body.pv-presenting .kpi-lbl{font-size:13px}
+body.pv-presenting .kpi-val{font-size:clamp(30px,3.2vw,46px)}
+body.pv-presenting .kpi-sub{font-size:13px}
+body.pv-presenting .card-title{font-size:19px}
+body.pv-presenting #pv-exec-metrics .pv-em-v{font-size:34px}
+body.pv-presenting #pv-exec-metrics .pv-em-l,body.pv-presenting #pv-exec-metrics .pv-em-s{font-size:13px}
+body.pv-presenting table{font-size:15px}
+body.pv-presenting th{font-size:13px;padding:11px 12px}
+body.pv-presenting td{padding:11px 12px}
 </style>
 </head>
 <body>
@@ -3253,18 +3266,19 @@ function renderExecKPIs(q){
   q=q||__EXQ||{total:0,complete:0,incomplete:0,pct:100};
   const dq=document.getElementById("exec-kpi-quality");
   if(dq){
-    dq.innerHTML=`<div style="font-weight:800;font-size:13px;color:#0369a1;margin-bottom:8px">📊 Data Quality</div>
+    dq.innerHTML=`<div style="font-weight:800;font-size:13px;color:#0369a1;margin-bottom:2px">📊 Data Completeness</div>
+      <div style="font-size:11px;color:#94a3b8;margin-bottom:8px">ความครบถ้วนของข้อมูลโครงการ</div>
       <div style="font-size:30px;font-weight:900;color:#0ea5e9;line-height:1">${q.pct.toFixed(1)}%</div>
       <div style="font-size:12px;color:#64748b;margin-top:6px;line-height:1.7">
-        ${q.total} Projects<br>
-        <span style="color:#16a34a;font-weight:700">${q.complete} Complete</span> ·
-        <span style="color:#ef4444;font-weight:700">${q.incomplete} Missing</span>
+        <b>${q.complete}</b> of <b>${q.total}</b> records complete<br>
+        <span style="color:#b45309;font-weight:700">${q.incomplete} ต้องตรวจสอบ</span>
       </div>`;
   }
   const hs=HEALTH_SCORE, hc=healthColor(hs);
   const hl=document.getElementById("exec-kpi-health");
   if(hl){
-    hl.innerHTML=`<div style="font-weight:800;font-size:13px;color:#0369a1;margin-bottom:8px">🏆 Dashboard Health</div>
+    hl.innerHTML=`<div style="font-weight:800;font-size:13px;color:#0369a1;margin-bottom:2px">🏆 Dashboard Health</div>
+      <div style="font-size:11px;color:#94a3b8;margin-bottom:8px">ภาพรวม: ครบถ้วน + ความสด + การเชื่อมต่อ</div>
       <div style="font-size:30px;font-weight:900;color:${hc};line-height:1">${hs}<span style="font-size:16px;color:#94a3b8">/100</span></div>
       <div style="font-size:13px;font-weight:800;color:${hc};margin-top:6px">${healthLabel(hs)}</div>
       <div style="height:7px;background:#e2e8f0;border-radius:5px;margin-top:8px;overflow:hidden"><div style="height:100%;width:${hs}%;background:${hc};border-radius:5px;transition:width .4s"></div></div>`;
@@ -3613,19 +3627,20 @@ setInterval(()=>{ try{ renderExecPanel(__EXQ); renderLiveBadges(__EXQ); HEALTH_S
     if(!q||!q.missing||!q.missing.length){ el.style.display="none"; return; }
     el.style.display="block";
     var n=q.missing.length;
+    var esc=(typeof escapeHtml==="function")?escapeHtml:function(s){return String(s==null?"":s);};
     var items=q.missing.slice(0,80).map(function(m){
       var nm=JSON.stringify(m.name);
       return '<div class="pv-miss-item" onclick=\'jumpToProject('+nm+')\'>'+
-        '<span class="pv-miss-name">'+m.name+'</span>'+
-        '<span class="pv-miss-tag">Missing: '+m.missing.join(", ")+'</span></div>';
+        '<span class="pv-miss-name">'+esc(m.name)+'</span>'+
+        '<span class="pv-miss-tag">ขาด: '+esc(m.missing.join(", "))+'</span></div>';
     }).join("");
     el.innerHTML=
       '<button type="button" class="pv-acc-head" onclick="togglePvMissing()" aria-expanded="'+PV_MISS_OPEN+'">'+
-        '<span>⚠ Missing Information<span class="pv-acc-count">'+n+'</span></span>'+
+        '<span>📋 Data Completion Review<span class="pv-acc-count">'+n+'</span></span>'+
         '<span class="pv-acc-chevron">'+(PV_MISS_OPEN?"▲":"▼")+'</span>'+
       '</button>'+
       '<div class="pv-acc-body" style="display:'+(PV_MISS_OPEN?"block":"none")+'">'+
-        '<div class="pv-miss-hint">'+n+' โครงการข้อมูลไม่ครบ — คลิกชื่อโครงการเพื่อไปยังแถวในตาราง</div>'+
+        '<div class="pv-miss-hint">'+n+' โครงการที่ข้อมูลยังไม่ครบ — คลิกชื่อโครงการเพื่อไปตรวจสอบที่แถวในตาราง</div>'+
         '<div class="pv-miss-list">'+items+'</div>'+
       '</div>';
   };
