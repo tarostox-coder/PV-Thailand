@@ -262,6 +262,10 @@ body.pv-exec .pv-exec-badge{display:inline-flex;align-items:center;gap:5px;backg
       <span class="badge" id="total-badge" style="background:rgba(255,255,255,.2)">— Projects</span>
       <span id="live-badges" style="display:flex;align-items:center;gap:6px"></span>
       <span class="pv-exec-badge">👔 Executive View</span>
+      <button id="refresh-btn" title="ดึงข้อมูลล่าสุดจาก Google Sheet เดี๋ยวนี้ (ข้อมูลเดิมไม่หาย)" onclick="forceRefresh(this)" style="display:flex;align-items:center;gap:6px;background:rgba(255,255,255,.15);border:1.5px solid rgba(255,255,255,.4);border-radius:20px;padding:5px 14px;color:#fff;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;transition:all .2s" onmouseover="this.style.background='rgba(255,255,255,.28)'" onmouseout="this.style.background='rgba(255,255,255,.15)'">
+        <svg class="rf-ico" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0114.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0020.49 15"/></svg>
+        <span class="rf-label">Refresh</span>
+      </button>
       <button onclick="openExportModal()" style="display:flex;align-items:center;gap:6px;background:rgba(255,255,255,.15);border:1.5px solid rgba(255,255,255,.4);border-radius:20px;padding:5px 14px;color:#fff;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;transition:all .2s" onmouseover="this.style.background='rgba(255,255,255,.28)'" onmouseout="this.style.background='rgba(255,255,255,.15)'">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
         Export / Share
@@ -281,6 +285,7 @@ body.pv-exec .pv-exec-badge{display:inline-flex;align-items:center;gap:5px;backg
     <button class="tab active" onclick="showTab('overview')">📊 Overview</button>
     <button class="tab" onclick="showTab('gantt')">📅 Gantt</button>
     <button class="tab" onclick="showTab('alerts')">🚦 Alerts</button>
+    <button class="tab" onclick="showTab('activity')">📝 Activity <span id="activity-badge" class="act-badge" style="display:none"></span></button>
     <button class="tab" onclick="showTab('schema')">🔍 Schema</button>
     <button class="tab" onclick="showTab('upload')">📂 Data</button>
     <button class="tab" onclick="showTab('pbi')">⚙️ Power BI</button>
@@ -483,6 +488,29 @@ body.pv-exec .pv-exec-badge{display:inline-flex;align-items:center;gap:5px;backg
       <div class="ov"><table>
         <thead><tr><th>#</th><th>ชื่อโครงการ</th><th>Contract</th><th>kWp</th><th>Status</th><th>End Date</th><th>Days Left</th><th>📋 Next Action</th><th>⚠️ Alert</th></tr></thead>
         <tbody id="alert-tbody"></tbody>
+      </table></div>
+    </div>
+  </div>
+
+  <!-- ACTIVITY / CHANGE LOG (V28.4) -->
+  <div id="tab-activity" style="display:none">
+    <div class="card">
+      <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px">
+        <div class="card-title" style="margin:0">📝 บันทึกการเปลี่ยนแปลง — ใครแก้ อะไร เมื่อไหร่</div>
+        <div style="display:flex;gap:8px;align-items:center">
+          <button onclick="forceRefresh(this)" style="display:flex;align-items:center;gap:6px;background:#0ea5e9;border:none;border-radius:18px;padding:6px 14px;color:#fff;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit">
+            <svg class="rf-ico" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0114.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0020.49 15"/></svg> ดึงข้อมูลล่าสุด
+          </button>
+          <button onclick="clearChangelog()" style="background:#fff;border:1.5px solid #e2e8f0;border-radius:18px;padding:6px 14px;color:#64748b;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit">🧹 ล้างประวัติ</button>
+        </div>
+      </div>
+      <div style="font-size:12px;color:#64748b;margin:8px 0 14px">
+        ระบบเทียบข้อมูลแต่ละรอบที่ sync เพื่อบอกว่า <b>โครงการไหน · คอลัมน์ไหน · เปลี่ยนจากอะไร→เป็นอะไร</b>.
+        ส่วนช่อง <b>“ใครแก้”</b> จะแสดงเมื่อติดตั้ง Apps Script ในชีตแล้ว (ดูวิธีในไฟล์ <code>apps-script/PV-ChangeLog.gs</code>).
+      </div>
+      <div class="ov"><table>
+        <thead><tr><th style="width:140px">เวลา</th><th>โครงการ</th><th>คอลัมน์</th><th>เปลี่ยนแปลง</th><th style="width:180px">ใครแก้</th></tr></thead>
+        <tbody id="activity-list"></tbody>
       </table></div>
     </div>
   </div>
@@ -1735,9 +1763,10 @@ function renderAll(d){
 
 // ── Tabs ──────────────────────────────────────────────────
 function showTab(n){
-  ["overview","gantt","alerts","schema","upload","pbi"].forEach(t=>document.getElementById("tab-"+t).style.display=t===n?"block":"none");
-  document.querySelectorAll(".tab").forEach((b,i)=>b.classList.toggle("active",["overview","gantt","alerts","schema","upload","pbi"][i]===n));
+  ["overview","gantt","alerts","activity","schema","upload","pbi"].forEach(t=>document.getElementById("tab-"+t).style.display=t===n?"block":"none");
+  document.querySelectorAll(".tab").forEach((b,i)=>b.classList.toggle("active",["overview","gantt","alerts","activity","schema","upload","pbi"][i]===n));
   if(n==="schema") renderSchema();
+  if(n==="activity"){ try{ renderActivity(); markActivitySeen(); }catch(e){} }
 }
 
 // ── File Upload ───────────────────────────────────────────
@@ -1852,6 +1881,9 @@ function processFile(file, opts){
       sb2.textContent=extra.length?`🆕 +${extra.length} Extra Cols`:"✅ Schema OK";
 
       buildFilters();applyFilters();
+
+      // ── V28.4: detect what changed vs the previous synced snapshot ──
+      try{ if(typeof recordDataDiff==="function") recordDataDiff(ALL); }catch(_e){}
 
       // ── Persist to localStorage so Refresh won't lose data ──
       try{
@@ -3604,7 +3636,7 @@ async function loadGsheetOnce(silent){
 }
 
 async function pollGsheet(){
-  try{ const changed=await loadGsheetOnce(true); if(changed){ SYNC_UPDATE_COUNT=(typeof SYNC_UPDATE_COUNT!=="undefined"?SYNC_UPDATE_COUNT:0)+1; flashSyncToast(); } }
+  try{ const changed=await loadGsheetOnce(true); if(changed){ SYNC_UPDATE_COUNT=(typeof SYNC_UPDATE_COUNT!=="undefined"?SYNC_UPDATE_COUNT:0)+1; flashSyncToast(); try{ if(typeof loadAuditLog==="function") loadAuditLog(); }catch(_){} } }
   catch(e){ OFFLINE=true; showOfflineBanner(); try{ renderExecPanel(__EXQ); renderLiveBadges(__EXQ); }catch(_){} }
 }
 async function fetchDriveMeta(id){                           // PART 4: best-effort, needs window.GDRIVE_API_KEY
@@ -3638,6 +3670,7 @@ async function connectGoogleSheet(){
       } else { throw e1; }
     }
     fetchDriveMeta(id);
+    try{ if(typeof loadAuditLog==="function") loadAuditLog(); }catch(_){}   // V28.4: pull "who" from ChangeLog tab
     if(GSHEET_INTERVAL) clearInterval(GSHEET_INTERVAL);
     GSHEET_INTERVAL=setInterval(pollGsheet, 60000);          // PART 3: refresh every 60s
     const stopBtn=document.getElementById("gsheet-stop-btn"); if(stopBtn) stopBtn.style.display="inline-flex";
@@ -3671,6 +3704,246 @@ function execExportLine(){
   const sync=LAST_SYNC_TIME?new Date(LAST_SYNC_TIME).toLocaleString("th-TH"):"—";
   return `<br>Last Sync: <b>${sync}</b> · By <b>${editor}</b><br>Data Age: <b>${age}</b> · Health: <b>${HEALTH_SCORE}/100</b>`;
 }
+
+// ══════════════════════════════════════════════════════════════════════════
+// ║  V28.4 — ACTIVITY / CHANGE LOG  (ใครแก้ · อะไร · เมื่อไหร่)              ║
+// ║  1) Client-side diff: เทียบข้อมูลรอบใหม่กับรอบก่อน → row/column/old→new  ║
+// ║  2) อ่านแท็บ "ChangeLog" (สร้างโดย Apps Script) → เติมชื่อผู้แก้ (who)    ║
+// ║  3) ปุ่ม Refresh: ดึงข้อมูลใหม่ทันที — ถ้าดึงไม่ได้ ข้อมูลเดิมไม่หาย       ║
+// ══════════════════════════════════════════════════════════════════════════
+var CHANGELOG    = [];      // merged entries, newest first: {ts,no,project,field,from,to,who,src}
+var PV_PREV_ROWS = null;    // baseline snapshot {no: {field:value}} from last parse
+var AUDIT_SEEN   = {};      // de-dup keys for Apps Script audit rows already ingested
+var ACT_SEEN_TS  = 0;       // newest ts the user has already looked at (for the tab badge)
+var _CL_LOADED   = false;
+var AUDIT_SHEET_NAME = "ChangeLog";
+
+// fields we diff, with display labels
+var TRACK_FIELDS = [
+  ["name","ชื่อโครงการ"],["status","Status (L1)"],["sub_status","Sub-Status (L2)"],
+  ["contract","Contract"],["location","Location"],["lead","Lead Sale"],["engineer","Engineer"],
+  ["value","มูลค่า (฿)"],["kwp","kWp"],["thb_w","฿/Watt"],["start","Start"],["end","End"],
+  ["progress","Progress"],["priority","Priority"],["region","Region"]
+];
+
+function _clEsc(s){ return (typeof escapeHtml==="function")?escapeHtml(String(s==null?"":s)):String(s==null?"":s); }
+function _valStr(v){ if(v==null) return ""; var s=String(v).trim(); return (s==="-"||s==="—")?"":s; }
+function _fieldLabel(k){
+  if(k.indexOf("x:")===0) return k.slice(2);
+  var f=TRACK_FIELDS.find(function(x){return x[0]===k;}); return f?f[1]:k;
+}
+function _rowSig(r){
+  var o={}; TRACK_FIELDS.forEach(function(f){ o[f[0]]=r[f[0]]; });
+  if(r&&r._extra){ Object.keys(r._extra).forEach(function(k){ o["x:"+k]=r._extra[k]; }); }
+  return o;
+}
+function ensureClLoaded(){
+  if(_CL_LOADED) return; _CL_LOADED=true;
+  try{
+    var raw=localStorage.getItem("pv_changelog");
+    if(raw){ var o=JSON.parse(raw)||{}; CHANGELOG=o.log||[]; PV_PREV_ROWS=o.prev||null; AUDIT_SEEN=o.seen||{}; ACT_SEEN_TS=o.seenTs||0; }
+  }catch(e){ console.warn("changelog load:",e); }
+}
+function saveChangelogStore(){
+  try{ localStorage.setItem("pv_changelog", JSON.stringify({ log:CHANGELOG.slice(0,500), prev:PV_PREV_ROWS, seen:AUDIT_SEEN, seenTs:ACT_SEEN_TS })); }
+  catch(e){ console.warn("changelog save:",e); }
+}
+
+// ── Diff the freshly-parsed rows against the previous snapshot ──────────────
+function recordDataDiff(newRows){
+  ensureClLoaded();
+  try{
+    if(!Array.isArray(newRows)) return;
+    var nextSnap={}, byNo={};
+    newRows.forEach(function(r){ if(r&&r.no!=null){ nextSnap[r.no]=_rowSig(r); byNo[r.no]=r; } });
+    if(PV_PREV_ROWS){                              // we have a baseline → produce diff entries
+      var entries=[], now=Date.now();
+      Object.keys(nextSnap).forEach(function(no){
+        var cur=nextSnap[no], prev=PV_PREV_ROWS[no];
+        var nm=(byNo[no]&&byNo[no].name)||("#"+no);
+        if(!prev){ entries.push({ts:now,no:no,project:nm,field:"➕ เพิ่มโครงการ",from:"",to:"",who:"",src:"diff"}); return; }
+        Object.keys(cur).forEach(function(k){
+          var ov=_valStr(prev[k]), nv=_valStr(cur[k]);
+          if(ov!==nv) entries.push({ts:now,no:no,project:nm,field:_fieldLabel(k),from:ov,to:nv,who:"",src:"diff"});
+        });
+      });
+      Object.keys(PV_PREV_ROWS).forEach(function(no){
+        if(!nextSnap[no]){
+          var nm=(PV_PREV_ROWS[no]&&PV_PREV_ROWS[no].name)||("#"+no);
+          entries.push({ts:now,no:no,project:nm,field:"🗑️ ลบโครงการ",from:"",to:"",who:"",src:"diff"});
+        }
+      });
+      if(entries.length){ CHANGELOG=entries.concat(CHANGELOG).slice(0,500); dedupAuditVsDiff(); }
+    }
+    PV_PREV_ROWS=nextSnap;
+    saveChangelogStore();
+    renderActivity();
+  }catch(e){ console.warn("recordDataDiff:",e); }
+}
+
+// ── Read the optional "ChangeLog" tab (filled by Apps Script) for WHO ───────
+async function loadAuditLog(){
+  ensureClLoaded();
+  var id=SYNC_SOURCE_ID;
+  if(!id || SYNC_SOURCE_TYPE!=="gsheet" || typeof XLSX==="undefined") return;
+  try{
+    var url="https://docs.google.com/spreadsheets/d/"+id+"/gviz/tq?tqx=out:csv&sheet="+encodeURIComponent(AUDIT_SHEET_NAME)+"&headers=1&_="+Date.now();
+    var res=await fetch(url,{cache:"no-store"});
+    if(!res||!res.ok) return;
+    var txt=await res.text();
+    if(!txt||!txt.trim()||_looksLikeHtml(txt)) return;     // tab missing / not public → ignore silently
+    ingestAuditCsv(txt);
+  }catch(e){ /* tab not present yet → silent */ }
+}
+function _pick(o){ for(var i=1;i<arguments.length;i++){ var k=arguments[i]; if(o[k]!=null&&String(o[k]).trim()!=="") return o[k]; } return ""; }
+function _parseTs(v){
+  if(v==null||v==="") return Date.now();
+  if(typeof v==="number") return v;
+  var t=Date.parse(v); return isNaN(t)?Date.now():t;
+}
+function ingestAuditCsv(txt){
+  try{
+    var wb=XLSX.read(txt,{type:"string"});
+    var rows=XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]],{defval:""});
+    if(!rows.length) return;
+    var added=[];
+    rows.forEach(function(r){
+      var who=_pick(r,"Editor","editor","User","ผู้แก้ไข","ใครแก้");
+      var proj=_pick(r,"Project","project","โครงการ","ชื่อโครงการ");
+      var col=_pick(r,"Column","column","คอลัมน์","Field");
+      var from=_pick(r,"Old","old","ค่าเดิม");
+      var to=_pick(r,"New","new","ค่าใหม่");
+      var rown=_pick(r,"Row","row","แถว");
+      var ts=_parseTs(_pick(r,"Timestamp","timestamp","Time","เวลา","วันเวลา"));
+      var key=ts+"|"+proj+"|"+col+"|"+to+"|"+who;
+      if(AUDIT_SEEN[key]) return;
+      AUDIT_SEEN[key]=1;
+      added.push({ts:ts,no:rown,project:proj,field:col||"(แก้ไข)",from:from,to:to,who:who||"(unknown)",src:"audit"});
+    });
+    if(added.length){
+      CHANGELOG=added.concat(CHANGELOG).sort(function(a,b){return b.ts-a.ts;}).slice(0,500);
+      dedupAuditVsDiff();
+      saveChangelogStore();
+      renderActivity();
+    }
+  }catch(e){ console.warn("ingestAuditCsv:",e); }
+}
+// drop client-diff rows that an authoritative audit row already covers (same project + new value, close in time)
+function dedupAuditVsDiff(){
+  var audits=CHANGELOG.filter(function(e){return e.src==="audit";});
+  if(!audits.length) return;
+  CHANGELOG=CHANGELOG.filter(function(e){
+    if(e.src!=="diff") return true;
+    var dup=audits.some(function(a){
+      return String(a.project||"")===String(e.project||"") && _valStr(a.to)===_valStr(e.to) && Math.abs(a.ts-e.ts)<20*60000;
+    });
+    return !dup;
+  });
+}
+
+// ── Render the Activity tab + tab badge ────────────────────────────────────
+function _fmtWhen(ts){
+  try{ var d=new Date(ts); return d.toLocaleDateString("th-TH",{day:"2-digit",month:"short"})+" "+d.toLocaleTimeString("th-TH",{hour:"2-digit",minute:"2-digit"}); }
+  catch(e){ return ""; }
+}
+function renderActivity(){
+  ensureClLoaded();
+  var el=document.getElementById("activity-list"); if(!el){ updateActivityBadge(); return; }
+  if(!CHANGELOG.length){
+    el.innerHTML='<tr><td colspan="5" style="text-align:center;color:#94a3b8;padding:28px">ยังไม่มีบันทึกการเปลี่ยนแปลง — เมื่อมีการแก้ข้อมูลใน Google Sheet รายการจะปรากฏที่นี่อัตโนมัติ</td></tr>';
+    updateActivityBadge(); return;
+  }
+  el.innerHTML=CHANGELOG.slice(0,200).map(function(e){
+    var who = e.who ? ('<span style="font-weight:700;color:#0f172a">'+_clEsc(e.who)+'</span>'
+                       + (e.src==="audit"?' <span title="จาก Apps Script" style="font-size:10px;color:#16a34a">✓</span>':''))
+                    : '<span style="color:#cbd5e1;font-style:italic">— (ติดตั้ง Apps Script เพื่อบันทึกชื่อ)</span>';
+    var change = (_valStr(e.from)||_valStr(e.to))
+      ? '<span style="color:#94a3b8">'+_clEsc(_valStr(e.from)||"(ว่าง)")+'</span> <b style="color:#0ea5e9">→</b> <span style="font-weight:700">'+_clEsc(_valStr(e.to)||"(ว่าง)")+'</span>'
+      : '<span style="color:#94a3b8">—</span>';
+    return '<tr>'
+      +'<td style="white-space:nowrap;color:#64748b;font-size:12px">'+_fmtWhen(e.ts)+'</td>'
+      +'<td style="font-weight:700">'+_clEsc(e.project||"")+(e.no?' <span style="color:#cbd5e1;font-weight:400">#'+_clEsc(e.no)+'</span>':'')+'</td>'
+      +'<td><span style="background:#f1f5f9;border-radius:12px;padding:2px 9px;font-size:12px;color:#475569">'+_clEsc(e.field||"")+'</span></td>'
+      +'<td style="font-size:13px">'+change+'</td>'
+      +'<td>'+who+'</td>'
+      +'</tr>';
+  }).join("");
+  updateActivityBadge();
+}
+function updateActivityBadge(){
+  var b=document.getElementById("activity-badge"); if(!b) return;
+  var unseen=CHANGELOG.filter(function(e){return e.ts>ACT_SEEN_TS;}).length;
+  if(unseen>0){ b.textContent=unseen>99?"99+":String(unseen); b.style.display="inline-block"; }
+  else { b.style.display="none"; }
+}
+function markActivitySeen(){
+  if(CHANGELOG.length) ACT_SEEN_TS=Math.max.apply(null,CHANGELOG.map(function(e){return e.ts;}));
+  else ACT_SEEN_TS=Date.now();
+  saveChangelogStore(); updateActivityBadge();
+}
+function clearChangelog(){
+  if(!confirm("ล้างประวัติการเปลี่ยนแปลงทั้งหมดในเครื่องนี้?\n(ข้อมูลโครงการไม่หาย — ลบเฉพาะบันทึก log)")) return;
+  CHANGELOG=[]; AUDIT_SEEN={}; ACT_SEEN_TS=Date.now();
+  // keep PV_PREV_ROWS so future diffs still work
+  saveChangelogStore(); renderActivity();
+}
+
+// ── Manual Refresh: pull latest now; keep current data if it fails ─────────
+function _refreshToast(ok,msg){
+  var t=document.getElementById("sync-toast");
+  if(!t){ t=document.createElement("div"); t.id="sync-toast"; document.body.appendChild(t); }
+  var col = ok ? "linear-gradient(135deg,#22c55e,#16a34a)" : "linear-gradient(135deg,#f59e0b,#ea580c)";
+  t.style.cssText="position:fixed;top:80px;right:20px;color:#fff;padding:14px 18px;border-radius:14px;box-shadow:0 12px 34px rgba(15,23,42,.35);font-size:13px;z-index:99999;font-family:Sarabun,sans-serif;line-height:1.55;pointer-events:none;min-width:200px;background:"+col;
+  t.innerHTML = ok
+    ? '<div style="font-size:14px;font-weight:800;margin-bottom:2px">✓ ดึงข้อมูลล่าสุดแล้ว</div><div style="opacity:.92">'+new Date().toLocaleTimeString("th-TH")+'</div>'
+    : '<div style="font-size:14px;font-weight:800;margin-bottom:2px">⚠ ดึงข้อมูลใหม่ไม่ได้</div><div style="opacity:.92">ใช้ข้อมูลล่าสุดที่มีอยู่ — ไม่หาย</div>'+(msg?'<div style="opacity:.8;font-size:11px;margin-top:2px">'+_clEsc(msg)+'</div>':'');
+  t.style.opacity="0"; t.style.transform="translateY(-12px)"; t.style.transition="opacity .25s,transform .25s";
+  requestAnimationFrame(function(){ t.style.opacity="1"; t.style.transform="translateY(0)"; });
+  clearTimeout(t._t); t._t=setTimeout(function(){ t.style.opacity="0"; t.style.transform="translateY(-12px)"; },4500);
+}
+async function forceRefresh(btn){
+  if(btn){ btn.disabled=true; btn.classList.add("rf-spin"); }
+  try{
+    if(SYNC_SOURCE_TYPE==="gsheet" && SYNC_SOURCE_ID){
+      GSHEET_TEXT_HASH="";                       // force a real reprocess+render even if bytes are identical
+      await loadGsheetOnce(false);               // throws on failure → ALL stays untouched (no data loss)
+      OFFLINE=false; hideOfflineBanner();
+      try{ await loadAuditLog(); }catch(_){}
+      _refreshToast(true);
+    } else if(SYNC_SOURCE_TYPE==="autosync" && typeof pollSyncFile==="function"){
+      await pollSyncFile();
+      _refreshToast(true);
+    } else {
+      if(typeof applyFilters==="function") applyFilters();   // local file → just re-render from cache
+      _refreshToast(true);
+    }
+  }catch(e){
+    OFFLINE=true; showOfflineBanner();
+    try{ renderExecPanel(__EXQ); renderLiveBadges(__EXQ); }catch(_){}
+    _refreshToast(false, e&&e.message);
+  }finally{
+    if(btn){ btn.disabled=false; btn.classList.remove("rf-spin"); }
+  }
+}
+
+// ── Styles + init ──────────────────────────────────────────────────────────
+(function(){
+  try{
+    var css=document.createElement("style");
+    css.textContent=
+      ".rf-spin .rf-ico{animation:rf-rot .8s linear infinite}"+
+      "@keyframes rf-rot{to{transform:rotate(360deg)}}"+
+      "#refresh-btn:disabled{opacity:.7;cursor:progress}"+
+      ".act-badge{background:#ef4444;color:#fff;border-radius:10px;font-size:10px;font-weight:800;padding:1px 6px;margin-left:2px;line-height:1.4}"+
+      "body.pv-exec #refresh-btn{display:flex}";
+    document.head.appendChild(css);
+  }catch(e){}
+  document.addEventListener("DOMContentLoaded",function(){
+    ensureClLoaded();
+    try{ renderActivity(); }catch(e){}
+    // exec/live view: connectGoogleSheet (called elsewhere) will trigger loadAuditLog after first fetch
+  });
+})();
 
 // ── Mark manual file uploads as 'file' source ──────────────────────────────
 (function(){
