@@ -225,6 +225,18 @@ body.pv-presenting td{padding:11px 12px}
 /* Chart symmetry: 4 chart cards in a 2×2 grid — each row holds two equal-height charts */
 .chart-row{align-items:stretch}
 .chart-row>.card{margin-bottom:0}
+/* V28.2 — donut + side legend (uses the horizontal space instead of empty margins) */
+.pv-donut-row{display:flex;gap:18px;align-items:center}
+.pv-donut-row .pv-chart-box{flex:0 0 auto;width:min(300px,48%);aspect-ratio:1/1;height:auto}
+.pv-donut-side{flex:1 1 auto;display:flex;flex-wrap:wrap;gap:6px 14px;align-content:center;max-height:300px;overflow:auto;font-size:12px;color:#475569}
+@media(max-width:640px){.pv-donut-row{flex-direction:column}.pv-donut-row .pv-chart-box{width:min(280px,90%)}.pv-donut-side{max-height:none;justify-content:center}}
+/* Donut fullscreen: let the chart fill the expanded card */
+.card.pv-fs .pv-donut-row{flex:1 1 auto;min-height:0}
+.card.pv-fs .pv-donut-row .pv-chart-box{flex:1 1 auto;width:auto;aspect-ratio:auto;height:auto!important}
+/* V28.2 — clickable KPI cards (filter / jump) */
+.kpi-click{cursor:pointer;transition:transform .12s,box-shadow .12s}
+.kpi-click:hover{transform:translateY(-3px);box-shadow:0 8px 22px rgba(15,23,42,.13)}
+.kpi-click:active{transform:translateY(-1px)}
 </style>
 </head>
 <body>
@@ -386,24 +398,28 @@ body.pv-presenting td{padding:11px 12px}
     <div class="kpi-row" id="kpi-row"></div>
     <div class="chart-row">
       <div class="card" style="margin-bottom:0">
-        <div class="card-title">📊 Status Distribution (สรุป 4 หมวด)</div>
-        <div style="font-size:11px;color:#94a3b8;margin-bottom:10px">ภาพรวมสถานะหลัก (Layer 1) ของทุกโครงการ — กดที่กราฟเพื่อกรองข้อมูล</div>
-        <canvas id="donut-chart" height="220"></canvas>
-        <div id="donut-legend" style="display:flex;flex-wrap:wrap;gap:6px 14px;margin-top:10px;justify-content:center;font-size:12px;color:#475569"></div>
-      </div>
-      <div class="card" id="status-detail-card" style="margin-bottom:0">
-        <div class="card-title">🎯 Sub-Status Detail (Layer 2 — รายละเอียดสถานะย่อย)</div>
-        <div style="font-size:11px;color:#94a3b8;margin-bottom:10px">แสดงสถานะย่อย (Layer 2) ของทุกโครงการ — กดที่กราฟเพื่อกรองข้อมูล</div>
-        <canvas id="donut-detail-chart" height="220"></canvas>
-        <div id="donut-detail-legend" style="display:flex;flex-wrap:wrap;gap:6px 14px;margin-top:10px;justify-content:center;font-size:12px;color:#475569"></div>
-      </div>
-      <div class="card" style="margin-bottom:0">
         <div class="card-title">📊 Top 15 by Capacity (kWp)</div>
         <canvas id="bar-chart" height="260"></canvas>
       </div>
       <div class="card" id="value-chart-card" style="margin-bottom:0">
         <div class="card-title">💰 Top 15 by มูลค่าโครงการ (บาท)</div>
         <canvas id="bar-value-chart" height="260"></canvas>
+      </div>
+      <div class="card" style="margin-bottom:0">
+        <div class="card-title">📊 Status Distribution (สรุป 4 หมวด)</div>
+        <div style="font-size:11px;color:#94a3b8;margin-bottom:10px">ภาพรวมสถานะหลัก (Layer 1) — กดที่กราฟ, legend หรือกล่อง KPI ด้านบนเพื่อกรองข้อมูล</div>
+        <div class="pv-donut-row">
+          <canvas id="donut-chart" height="220"></canvas>
+          <div id="donut-legend" class="pv-donut-side"></div>
+        </div>
+      </div>
+      <div class="card" id="status-detail-card" style="margin-bottom:0">
+        <div class="card-title">🎯 Sub-Status Detail (Layer 2 — รายละเอียดสถานะย่อย)</div>
+        <div style="font-size:11px;color:#94a3b8;margin-bottom:10px">แสดงสถานะย่อย (Layer 2) ของทุกโครงการ — กดที่กราฟหรือ legend เพื่อกรองข้อมูล</div>
+        <div class="pv-donut-row">
+          <canvas id="donut-detail-chart" height="220"></canvas>
+          <div id="donut-detail-legend" class="pv-donut-side"></div>
+        </div>
       </div>
     </div>
     <div class="card" id="growth-card">
@@ -1094,14 +1110,36 @@ function renderKPI(st){
   const valDisp=st.hasVal?"฿"+st.tval.toLocaleString("th-TH"):"—";
   const valSub=st.hasVal?`${FILTERED.filter(x=>x.value!=null).length} โครงการมีมูลค่า`:"ยังไม่กรอกข้อมูล";
   document.getElementById("kpi-row").innerHTML=[
-    {l:"Total Projects",  v:st.total,                   icon:"📋",c:"#64748b",s:"ทั้งหมด"},
-    {l:"Bidding",         v:st.inprog,                  icon:"📘",c:"#3b82f6",s:"อยู่ระหว่าง Bidding"},
-    {l:"Hold",            v:st.hold,                    icon:"🟡",c:"#f59e0b",s:"ชะลอโครงการ"},
-    {l:"Win / Signed",    v:st.win,                     icon:"🏆",c:"#22c55e",s:fmt(st.wkwp,1)+" kWp"},
-    {l:"Lost",            v:st.lost,                    icon:"❌",c:"#ef4444",s:`${st.lost} ปิดงานเนื่องจากแพ้`},
-    {l:"Total Capacity",  v:fmt(st.tkwp,1)+" kWp",      icon:"☀️",c:"#0ea5e9",s:"Avg "+fmt(st.avg,0)+" kWp/proj"},
-    {l:"มูลค่ารวม (฿)",   v:valDisp,                    icon:"💰",c:"#8b5cf6",s:valSub},
-  ].map(k=>`<div class="kpi" style="--c:${k.c}"><div class="kpi-lbl">${k.l}<span>${k.icon}</span></div><div class="kpi-val" style="font-size:${k.v.length>12?"20px":"28px"}">${k.v}</div><div class="kpi-sub">${k.s}</div></div>`).join("");
+    {l:"Total Projects",  v:st.total,                   icon:"📋",c:"#64748b",s:"ทั้งหมด",f:"All"},
+    {l:"Bidding",         v:st.inprog,                  icon:"📘",c:"#3b82f6",s:"อยู่ระหว่าง Bidding",f:"Bidding"},
+    {l:"Hold",            v:st.hold,                    icon:"🟡",c:"#f59e0b",s:"ชะลอโครงการ",f:"Hold"},
+    {l:"Win / Signed",    v:st.win,                     icon:"🏆",c:"#22c55e",s:fmt(st.wkwp,1)+" kWp",f:"Win"},
+    {l:"Lost",            v:st.lost,                    icon:"❌",c:"#ef4444",s:`${st.lost} ปิดงานเนื่องจากแพ้`,f:"Lost"},
+    {l:"Total Capacity",  v:fmt(st.tkwp,1)+" kWp",      icon:"☀️",c:"#0ea5e9",s:"Avg "+fmt(st.avg,0)+" kWp/proj",scroll:"bar-chart"},
+    {l:"มูลค่ารวม (฿)",   v:valDisp,                    icon:"💰",c:"#8b5cf6",s:valSub,scroll:"bar-value-chart"},
+  ].map(k=>{
+    const click=(k.f!=null)?`onclick="kpiFilter('${k.f}')"`:(k.scroll?`onclick="kpiScrollTo('${k.scroll}')"`:"");
+    const clk=(k.f!=null||k.scroll)?" kpi-click":"";
+    const tip=(k.f!=null)?(k.f==="All"?"กดเพื่อแสดงทุกโครงการ":"กดเพื่อกรองเฉพาะ "+k.l):(k.scroll?"กดเพื่อไปที่กราฟ":"");
+    return `<div class="kpi${clk}" style="--c:${k.c}" ${click} title="${tip}"><div class="kpi-lbl">${k.l}<span>${k.icon}</span></div><div class="kpi-val" style="font-size:${k.v.length>12?"20px":"28px"}">${k.v}</div><div class="kpi-sub">${k.s}</div></div>`;
+  }).join("");
+}
+
+// V28.2 — click a KPI card to filter the dashboard by Status (L1); "All" resets every filter
+function kpiFilter(status){
+  if(status==="All"||!status){
+    if(typeof clearFilters==="function") clearFilters();
+  } else {
+    const sel=document.getElementById("f_status");
+    if(sel){ sel.value=status; if(typeof onLayer1Change==="function") onLayer1Change(); else applyFilters(); }
+  }
+  const t=document.querySelector("#tab-overview .ov");
+  if(t) t.scrollIntoView({behavior:"smooth",block:"center"});
+}
+// V28.2 — click a metric card to scroll to its related chart
+function kpiScrollTo(canvasId){
+  const cv=document.getElementById(canvasId);
+  if(cv){ const card=cv.closest(".card")||cv; card.scrollIntoView({behavior:"smooth",block:"center"}); }
 }
 
 // ── Charts ────────────────────────────────────────────────
@@ -1111,9 +1149,12 @@ function renderCharts(d){
   dChart=new Chart(document.getElementById("donut-chart"),{
     type:"doughnut",
     data:{labels:cats,datasets:[{data:cats.map(c=>d.filter(x=>classify(x.status)===c).length),backgroundColor:dc,borderWidth:2,borderColor:"#fff",hoverOffset:6}]},
-    options:{plugins:{legend:{display:false},datalabels:{display:false},tooltip:{callbacks:{label:ctx=>`${ctx.label}: ${ctx.raw} โครงการ`}}},cutout:"55%",animation:{animateRotate:true}}
+    options:{plugins:{legend:{display:false},datalabels:{display:false},tooltip:{callbacks:{label:ctx=>`${ctx.label}: ${ctx.raw} โครงการ (กดเพื่อกรอง)`}}},cutout:"55%",animation:{animateRotate:true},
+      onHover:(e,el)=>{e.native.target.style.cursor=el.length?"pointer":"default";},
+      onClick:(e,elements)=>{ if(!elements.length)return; const clicked=cats[elements[0].index]; const sel=document.getElementById("f_status"); if(sel){ sel.value=(sel.value===clicked?"All":clicked); if(typeof onLayer1Change==="function") onLayer1Change(); else applyFilters(); } }
+    }
   });
-  document.getElementById("donut-legend").innerHTML=cats.map((c,i)=>`<div style="display:flex;align-items:center;gap:5px"><div style="width:10px;height:10px;border-radius:50%;background:${dc[i]}"></div><span>${c}: <b style="color:${dc[i]}">${d.filter(x=>classify(x.status)===c).length}</b></span></div>`).join("");
+  document.getElementById("donut-legend").innerHTML=cats.map((c,i)=>`<div onclick="kpiFilter('${c}')" style="display:flex;align-items:center;gap:5px;cursor:pointer;padding:3px 8px;border-radius:14px;transition:background .15s" onmouseover="this.style.background='#f1f5f9'" onmouseout="this.style.background=''"><div style="width:10px;height:10px;border-radius:50%;background:${dc[i]}"></div><span>${c}: <b style="color:${dc[i]}">${d.filter(x=>classify(x.status)===c).length}</b></span></div>`).join("");
 
   // ─── Detail donut: sub_status (Layer 2) — V24 ───
   const detailEl=document.getElementById("donut-detail-chart");
@@ -1262,13 +1303,8 @@ function renderTable(d){
   const sorted=sortF?[...d].sort((a,b)=>{const av=a[sortF]??0,bv=b[sortF]??0;return(av>bv?1:av<bv?-1:0)*sortD;}):d;
   const page=sorted.slice((CUR_PAGE-1)*ps, CUR_PAGE*ps);
   document.getElementById("proj-count").textContent=`(${d.length})`;
-  const hasEx=EXTRA_COLS.length>0;
-  const tog=document.getElementById("extra-tog");
-  tog.style.display=hasEx?"inline-block":"none";
-  tog.textContent=SHOW_EXTRA?`▲ ซ่อน Extra Columns (${EXTRA_COLS.length})`:`▼ แสดง Extra Columns (${EXTRA_COLS.length}) 🆕`;
-  // Default core columns — matches export layout (Aligned to Excel v4: NO Target Proposal)
-  // Core: business fields + Contact/Description/Next Action/THB-Watt/Follow Up
-  // Extras (hidden by default, click to show): Start Date, End Date, Progress
+  // V28.2: default table shows columns through Sub-Status (L2). Everything after that
+  // (contact/notes, dates, progress, other Excel extras) is hidden behind the toggle.
   let coreCols=[
     {k:"no",l:"#",s:true},
     {k:"name",l:"ชื่อโครงการ",s:true},
@@ -1280,32 +1316,31 @@ function renderTable(d){
     {k:"lead",l:"Lead",s:true},
     {k:"engineer",l:"Engineer",s:true},
     {k:"status",l:"Status (L1)",s:true},
-    {k:"sub_status",l:"Sub-Status (L2)",s:true},
-    {k:"_x_Contact",l:"Contact",s:false},
-    {k:"_x_Description",l:"Description",s:false},
-    {k:"_x_Next Action",l:"Next Action",s:false},
-    {k:"_x_วันที่ Follow Up",l:"วันที่ Follow Up",s:false}
+    {k:"sub_status",l:"Sub-Status (L2)",s:true}
   ];
-  // CAPTURE MODE for PNG/JPG export: swap columns
-  // ─ ADD as core: Description, Next Action, THB/Watt, Follow Up date
-  // ─ MOVE to extras: Start Date, End Date, % Progress
-  // CAPTURE_MODE swap (PNG/JPG export) — uses default coreCols (already includes promoted extras)
-  // No additional changes needed since default layout already matches
-  // Hidden extras (shown when SHOW_EXTRA toggle is on): Start, End, Progress + other Excel extras
+  // Hidden by default — revealed by the "แสดงคอลัมน์เพิ่มเติม" toggle (or in PNG/JPG capture mode)
+  const infoExtras=[
+    {k:"_x_Contact",l:"Contact",s:false,ex:true},
+    {k:"_x_Description",l:"Description",s:false,ex:true},
+    {k:"_x_Next Action",l:"Next Action",s:false,ex:true},
+    {k:"_x_วันที่ Follow Up",l:"วันที่ Follow Up",s:false,ex:true}
+  ];
   const dateExtras=[
     {k:"start",l:"Start Date",s:false,ex:true},
     {k:"end",l:"End Date",s:false,ex:true},
     {k:"progress",l:"Progress",s:false,ex:true}
   ];
-  // Extras already promoted to core (don't repeat in extras section)
+  // Other Excel extras not already represented above
   const promoted=["Contact","Description","Next Action","วันที่ Follow Up","THB / Watt","THB/Watt","thb/watt","thb / watt","Days Left"];
   const otherExtras=EXTRA_COLS.filter(e=>!promoted.some(p=>e.toLowerCase().includes(p.toLowerCase()))).map(e=>({k:"_x_"+e,l:e,s:false,ex:true}));
+  const hiddenCols=[...infoExtras,...dateExtras,...otherExtras];
+  // Toggle button reveals all hidden columns
+  const tog=document.getElementById("extra-tog");
+  tog.style.display=hiddenCols.length?"inline-block":"none";
+  tog.textContent=SHOW_EXTRA?`▲ ซ่อนคอลัมน์เพิ่มเติม (${hiddenCols.length})`:`▼ แสดงคอลัมน์เพิ่มเติม (${hiddenCols.length}) — Contact · Description · Follow Up …`;
   let allCols;
-  if(typeof CAPTURE_MODE!=="undefined" && CAPTURE_MODE==="swap"){
-    // PNG/JPG capture mode — same as default now (already restructured)
-    allCols=[...coreCols,...dateExtras,...otherExtras];
-  } else if(SHOW_EXTRA){
-    allCols=[...coreCols,...dateExtras,...otherExtras];
+  if((typeof CAPTURE_MODE!=="undefined" && CAPTURE_MODE==="swap") || SHOW_EXTRA){
+    allCols=[...coreCols,...hiddenCols];
   } else {
     allCols=coreCols;
   }
