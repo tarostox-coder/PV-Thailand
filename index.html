@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>☀️ PV Project Dashboard 2025–2026 (V24 · 2-Layer Status)</title>
+<title>☀️ PV Project Dashboard 2025–2026 (V28 · 2-Layer Status)</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
@@ -107,7 +107,9 @@ tr:hover td{background:#eff6ff!important}
 .chart-row .card{display:flex;flex-direction:column}
 /* 5: Chart Standardization — equal columns + fixed-height boxes (no aspect-ratio ballooning) */
 .chart-row{grid-template-columns:1fr 1fr}
-.pv-chart-box{position:relative;width:100%}
+/* V28 fix: box keeps its height (flex:0 0 auto) + clips overflow, so the chart can't bleed
+   onto the legend below — while Chart.js keeps full control of canvas sizing (round donuts) */
+.pv-chart-box{position:relative;width:100%;flex:0 0 auto;overflow:hidden}
 .pv-h-donut{height:300px}
 .pv-h-bar{height:480px}
 .pv-h-area{height:200px}
@@ -127,18 +129,18 @@ tr:hover td{background:#eff6ff!important}
 .pv-sk-l{font-size:9px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:.3px;white-space:nowrap}
 .pv-sk-v{font-size:16px;font-weight:900;color:#1e293b;line-height:1.15;white-space:nowrap}
 /* 1: Missing Information Accordion */
-#missing-panel{padding:0;overflow:hidden;border:1px solid #fecaca;margin-top:18px}
-.pv-acc-head{width:100%;border:none;background:linear-gradient(135deg,#fff5f5,#fff);color:#b91c1c;font-family:inherit;font-weight:800;font-size:15px;padding:16px 20px;cursor:pointer;display:flex;align-items:center;justify-content:space-between;gap:10px}
-.pv-acc-head:hover{background:#fef2f2}
-.pv-acc-count{background:#dc2626;color:#fff;border-radius:20px;font-size:12px;font-weight:800;padding:1px 11px;margin-left:6px}
-.pv-acc-chevron{font-size:12px;color:#dc2626}
+#missing-panel{padding:0;overflow:hidden;border:1px solid #fde68a;margin-top:18px}
+.pv-acc-head{width:100%;border:none;background:linear-gradient(135deg,#fffbeb,#fff);color:#92400e;font-family:inherit;font-weight:800;font-size:15px;padding:16px 20px;cursor:pointer;display:flex;align-items:center;justify-content:space-between;gap:10px}
+.pv-acc-head:hover{background:#fffbeb}
+.pv-acc-count{background:#d97706;color:#fff;border-radius:20px;font-size:12px;font-weight:800;padding:1px 11px;margin-left:6px}
+.pv-acc-chevron{font-size:12px;color:#d97706}
 .pv-acc-body{padding:4px 18px 18px}
 .pv-miss-hint{font-size:12px;color:#94a3b8;margin:6px 0 12px}
-.pv-miss-list{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:8px;max-height:340px;overflow:auto}
-.pv-miss-item{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:9px 13px;border:1px solid #fee2e2;background:#fff;border-radius:9px;cursor:pointer;transition:all .15s}
-.pv-miss-item:hover{background:#fef2f2;border-color:#fca5a5}
+.pv-miss-list{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:8px;max-height:360px;overflow:auto;padding-right:2px}
+.pv-miss-item{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:10px 13px;border:1px solid #fde68a;background:#fff;border-radius:9px;cursor:pointer;transition:all .15s}
+.pv-miss-item:hover{background:#fffbeb;border-color:#fcd34d}
 .pv-miss-name{font-weight:700;color:#1e293b;font-size:13px}
-.pv-miss-tag{font-size:11px;color:#dc2626;font-weight:600;text-align:right}
+.pv-miss-tag{font-size:11px;color:#b45309;font-weight:600;text-align:right}
 /* 2: temporary row highlight after navigate */
 @keyframes pvRowHL{0%{background:#fde68a}60%{background:#fef3c7}100%{background:transparent}}
 tr.pv-row-hl td{animation:pvRowHL 2.6s ease;background:#fef3c7!important;box-shadow:inset 3px 0 0 #f59e0b}
@@ -171,6 +173,58 @@ body.pv-presenting #pv-pres-flag{display:flex}
   #exec-grid .card{font-size:15px}
   .pv-h-donut{height:400px}.pv-h-bar{height:640px}.pv-h-area{height:280px}
 }
+/* ════════ PHASE 4 — V28 Executive Polish & Stabilization (UI ONLY, additive) ════════ */
+/* B/M: System Information collapsible inside LIVE DATA STATUS */
+.pv-sysinfo{margin-top:8px;border-top:1px dashed #e2e8f0;padding-top:6px}
+.pv-sysinfo>summary{cursor:pointer;font-size:12px;font-weight:700;color:#0369a1;list-style:none;user-select:none;display:flex;align-items:center;gap:6px}
+.pv-sysinfo>summary::-webkit-details-marker{display:none}
+.pv-sysinfo>summary::before{content:"▸";font-size:11px;transition:transform .15s}
+.pv-sysinfo[open]>summary::before{transform:rotate(90deg)}
+/* C: Executive metrics strip — same grid rhythm as KPI row (visual consistency) */
+#pv-exec-metrics{display:grid;grid-template-columns:repeat(auto-fit,minmax(168px,1fr));gap:14px;margin-bottom:18px;align-items:stretch}
+#pv-exec-metrics .pv-em{background:#fff;border-radius:14px;padding:16px 20px;box-shadow:var(--pv-shadow);border-top:4px solid var(--c,#1d4ed8);display:flex;flex-direction:column;min-width:0}
+.pv-em-l{font-size:11px;color:#64748b;font-weight:700;letter-spacing:.4px;text-transform:uppercase;margin-bottom:6px}
+.pv-em-v{font-size:28px;font-weight:900;color:#1e293b;line-height:1.1;overflow-wrap:anywhere}
+.pv-em-s{font-size:11px;color:#94a3b8;margin-top:auto;padding-top:3px}
+/* F: Predictive action panel */
+#pv-actions .pv-act-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:10px;margin-top:12px}
+.pv-act-cat{border:1px solid #e2e8f0;border-radius:11px;padding:12px 14px;background:#fff}
+.pv-act-cat h4{font-size:13px;font-weight:800;margin-bottom:8px;display:flex;align-items:center;justify-content:space-between;gap:8px}
+.pv-act-sev{font-size:10px;font-weight:800;border-radius:20px;padding:1px 9px;text-transform:uppercase;letter-spacing:.3px;white-space:nowrap}
+.pv-sev-high{background:#fef2f2;color:#dc2626;border:1px solid #fca5a5}
+.pv-sev-med{background:#fff7ed;color:#c2410c;border:1px solid #fed7aa}
+.pv-sev-low{background:#f0f9ff;color:#0369a1;border:1px solid #bae6fd}
+.pv-act-item{font-size:12px;color:#334155;padding:5px 8px;border-radius:7px;cursor:pointer;display:flex;justify-content:space-between;gap:8px;transition:background .12s}
+.pv-act-item:hover{background:#f1f5f9}
+.pv-act-item .pv-act-tag{color:#94a3b8;font-size:11px;white-space:nowrap}
+.pv-act-empty{font-size:13px;color:#16a34a;font-weight:700;padding:6px 2px}
+.pv-act-more{font-size:11px;color:#64748b;margin-top:4px}
+@media(min-width:1921px){#pv-exec-metrics .pv-em-v{font-size:38px}.pv-em-l,.pv-em-s{font-size:14px}.pv-act-cat h4{font-size:16px}}
+@media(max-width:640px){#pv-exec-metrics{grid-template-columns:1fr 1fr}#pv-actions .pv-act-grid{grid-template-columns:1fr}}
+/* K: Executive Presentation Mode — boardroom / TV typography (scoped to .pv-presenting, additive) */
+body.pv-presenting .body{max-width:1800px;margin:0 auto;padding:26px 44px}
+body.pv-presenting .fbar{display:none}
+body.pv-presenting .kpi{padding:22px 24px}
+body.pv-presenting .kpi-lbl{font-size:13px}
+body.pv-presenting .kpi-val{font-size:clamp(30px,3.2vw,46px)}
+body.pv-presenting .kpi-sub{font-size:13px}
+body.pv-presenting .card-title{font-size:19px}
+body.pv-presenting #pv-exec-metrics .pv-em-v{font-size:34px}
+body.pv-presenting #pv-exec-metrics .pv-em-l,body.pv-presenting #pv-exec-metrics .pv-em-s{font-size:13px}
+body.pv-presenting table{font-size:15px}
+body.pv-presenting th{font-size:13px;padding:11px 12px}
+body.pv-presenting td{padding:11px 12px}
+/* ════════ V28.1 — Header status tiles (moved from body) + chart symmetry ════════ */
+#pv-head-status{display:flex;gap:10px;justify-content:flex-end;flex-wrap:wrap;margin-bottom:14px}
+.pv-htile{background:rgba(255,255,255,.13);border:1px solid rgba(255,255,255,.22);border-radius:12px;padding:9px 15px;min-width:160px;color:#fff;backdrop-filter:blur(4px)}
+.pv-htile-h{font-size:10px;font-weight:800;letter-spacing:.4px;opacity:.85;margin-bottom:4px;text-transform:uppercase;white-space:nowrap}
+.pv-htile-v{font-size:22px;font-weight:900;line-height:1}
+.pv-htile-s{font-size:10px;opacity:.82;margin-top:3px;line-height:1.55}
+@media(max-width:640px){#pv-head-status{justify-content:flex-start}.pv-htile{flex:1 1 calc(50% - 10px);min-width:140px}}
+@media(min-width:1921px){.pv-htile{min-width:210px;padding:12px 20px}.pv-htile-h{font-size:13px}.pv-htile-v{font-size:30px}.pv-htile-s{font-size:13px}}
+/* Chart symmetry: 4 chart cards in a 2×2 grid — each row holds two equal-height charts */
+.chart-row{align-items:stretch}
+.chart-row>.card{margin-bottom:0}
 </style>
 </head>
 <body>
@@ -179,7 +233,7 @@ body.pv-presenting #pv-pres-flag{display:flex}
   <div class="header-top">
     <div class="h-title">
       <span style="font-size:28px">☀️</span>
-      <div><h1>PV PROJECT DASHBOARD</h1><p id="today-lbl">2025–2026 | Executive Overview · V24 (2-Layer Status System)</p></div>
+      <div><h1>PV PROJECT DASHBOARD</h1><p id="today-lbl">2025–2026 | Executive Overview · V28 (2-Layer Status System)</p></div>
     </div>
     <div id="header-badges" style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
       <span class="badge" id="schema-badge" style="background:rgba(34,197,94,.3);display:none"></span>
@@ -190,6 +244,15 @@ body.pv-presenting #pv-pres-flag{display:flex}
         Export / Share
       </button>
     </div>
+  </div>
+  <!-- V28.1: executive status tiles relocated into the header (top-right) -->
+  <div id="pv-head-status">
+    <div class="pv-htile" id="exec-tile-status">
+      <div class="pv-htile-h">📡 Live Data Status</div>
+      <div id="exec-panel-body"></div>
+    </div>
+    <div class="pv-htile" id="exec-kpi-quality"></div>
+    <div class="pv-htile" id="exec-kpi-health"></div>
   </div>
   <div class="tabs">
     <button class="tab active" onclick="showTab('overview')">📊 Overview</button>
@@ -322,28 +385,25 @@ body.pv-presenting #pv-pres-flag{display:flex}
   <div id="tab-overview">
     <div class="kpi-row" id="kpi-row"></div>
     <div class="chart-row">
-      <div style="display:flex;flex-direction:column;gap:18px">
-        <div class="card" style="margin-bottom:0">
-          <div class="card-title">📊 Status Distribution (สรุป 4 หมวด)</div>
-          <canvas id="donut-chart" height="220"></canvas>
-          <div id="donut-legend" style="display:flex;flex-wrap:wrap;gap:6px 14px;margin-top:10px;justify-content:center;font-size:12px;color:#475569"></div>
-        </div>
-        <div class="card" id="status-detail-card" style="margin-bottom:0">
-          <div class="card-title">🎯 Sub-Status Detail (Layer 2 — รายละเอียดสถานะย่อย)</div>
-          <div style="font-size:11px;color:#94a3b8;margin-bottom:10px">แสดงสถานะย่อย (Layer 2) ของทุกโครงการ — กดที่กราฟเพื่อกรองข้อมูล</div>
-          <canvas id="donut-detail-chart" height="220"></canvas>
-          <div id="donut-detail-legend" style="display:flex;flex-wrap:wrap;gap:6px 14px;margin-top:10px;justify-content:center;font-size:12px;color:#475569"></div>
-        </div>
+      <div class="card" style="margin-bottom:0">
+        <div class="card-title">📊 Status Distribution (สรุป 4 หมวด)</div>
+        <div style="font-size:11px;color:#94a3b8;margin-bottom:10px">ภาพรวมสถานะหลัก (Layer 1) ของทุกโครงการ — กดที่กราฟเพื่อกรองข้อมูล</div>
+        <canvas id="donut-chart" height="220"></canvas>
+        <div id="donut-legend" style="display:flex;flex-wrap:wrap;gap:6px 14px;margin-top:10px;justify-content:center;font-size:12px;color:#475569"></div>
       </div>
-      <div style="display:flex;flex-direction:column;gap:18px">
-        <div class="card" style="margin-bottom:0">
-          <div class="card-title">📊 Top 15 by Capacity (kWp)</div>
-          <canvas id="bar-chart" height="260"></canvas>
-        </div>
-        <div class="card" id="value-chart-card" style="margin-bottom:0">
-          <div class="card-title">💰 Top 15 by มูลค่าโครงการ (บาท)</div>
-          <canvas id="bar-value-chart" height="260"></canvas>
-        </div>
+      <div class="card" id="status-detail-card" style="margin-bottom:0">
+        <div class="card-title">🎯 Sub-Status Detail (Layer 2 — รายละเอียดสถานะย่อย)</div>
+        <div style="font-size:11px;color:#94a3b8;margin-bottom:10px">แสดงสถานะย่อย (Layer 2) ของทุกโครงการ — กดที่กราฟเพื่อกรองข้อมูล</div>
+        <canvas id="donut-detail-chart" height="220"></canvas>
+        <div id="donut-detail-legend" style="display:flex;flex-wrap:wrap;gap:6px 14px;margin-top:10px;justify-content:center;font-size:12px;color:#475569"></div>
+      </div>
+      <div class="card" style="margin-bottom:0">
+        <div class="card-title">📊 Top 15 by Capacity (kWp)</div>
+        <canvas id="bar-chart" height="260"></canvas>
+      </div>
+      <div class="card" id="value-chart-card" style="margin-bottom:0">
+        <div class="card-title">💰 Top 15 by มูลค่าโครงการ (บาท)</div>
+        <canvas id="bar-value-chart" height="260"></canvas>
       </div>
     </div>
     <div class="card" id="growth-card">
@@ -1051,7 +1111,7 @@ function renderCharts(d){
   dChart=new Chart(document.getElementById("donut-chart"),{
     type:"doughnut",
     data:{labels:cats,datasets:[{data:cats.map(c=>d.filter(x=>classify(x.status)===c).length),backgroundColor:dc,borderWidth:2,borderColor:"#fff",hoverOffset:6}]},
-    options:{plugins:{legend:{display:false},tooltip:{callbacks:{label:ctx=>`${ctx.label}: ${ctx.raw} โครงการ`}}},cutout:"55%",animation:{animateRotate:true}}
+    options:{plugins:{legend:{display:false},datalabels:{display:false},tooltip:{callbacks:{label:ctx=>`${ctx.label}: ${ctx.raw} โครงการ`}}},cutout:"55%",animation:{animateRotate:true}}
   });
   document.getElementById("donut-legend").innerHTML=cats.map((c,i)=>`<div style="display:flex;align-items:center;gap:5px"><div style="width:10px;height:10px;border-radius:50%;background:${dc[i]}"></div><span>${c}: <b style="color:${dc[i]}">${d.filter(x=>classify(x.status)===c).length}</b></span></div>`).join("");
 
@@ -1080,7 +1140,7 @@ function renderCharts(d){
         type:"doughnut",
         data:{labels:rawLabels,datasets:[{data:filteredCounts,backgroundColor:rawLabels.map((_,i)=>palette[i%palette.length]),borderWidth:2,borderColor:"#fff",hoverOffset:6}]},
         options:{
-          plugins:{legend:{display:false},tooltip:{callbacks:{label:ctx=>`${ctx.label}: ${ctx.raw} โครงการ (กดเพื่อกรอง)`}}},
+          plugins:{legend:{display:false},datalabels:{display:false},tooltip:{callbacks:{label:ctx=>`${ctx.label}: ${ctx.raw} โครงการ (กดเพื่อกรอง)`}}},
           cutout:"55%",
           animation:{animateRotate:true},
           onHover:(e,el)=>{e.native.target.style.cursor=el.length?"pointer":"default";},
@@ -1186,7 +1246,7 @@ function renderCharts(d){
   aChart=new Chart(document.getElementById("area-chart"),{
     type:"line",
     data:{labels:pts.map(p=>p.x),datasets:[{data:pts.map(p=>p.y),fill:true,backgroundColor:"rgba(14,165,233,.15)",borderColor:"#0ea5e9",borderWidth:2,pointRadius:0,tension:0.4}]},
-    options:{plugins:{legend:{display:false},tooltip:{callbacks:{label:ctx=>ctx.raw.toLocaleString()+" kWp (Cumulative)"}}},scales:{x:{ticks:{font:{size:10},maxTicksLimit:12},grid:{color:"#f1f5f9"}},y:{ticks:{font:{size:10}},grid:{color:"#f1f5f9"}}},animation:{duration:400}}
+    options:{plugins:{legend:{display:false},datalabels:{display:false},tooltip:{callbacks:{label:ctx=>ctx.raw.toLocaleString()+" kWp (Cumulative)"}}},scales:{x:{ticks:{font:{size:10},maxTicksLimit:12},grid:{color:"#f1f5f9"}},y:{ticks:{font:{size:10}},grid:{color:"#f1f5f9"}}},animation:{duration:400}}
   });
 }
 
@@ -1763,6 +1823,7 @@ function processFile(file, opts){
           dataHash: (typeof DATA_HASH!=="undefined"?DATA_HASH:""),
           sourceType: (typeof SYNC_SOURCE_TYPE!=="undefined"?SYNC_SOURCE_TYPE:"file"),
           sourceId: (typeof SYNC_SOURCE_ID!=="undefined"?SYNC_SOURCE_ID:""),
+          gsheetGid: (typeof GSHEET_GID!=="undefined"?GSHEET_GID:""),   // V28.1: remember tab so live sync resumes after refresh
           healthScore: (typeof HEALTH_SCORE!=="undefined"?HEALTH_SCORE:0)
         };
         localStorage.setItem("pv_dashboard_v25", JSON.stringify(snapshot));
@@ -1987,6 +2048,7 @@ function restoreFromStorage(){
       DATA_HASH=snap.dataHash||"";
       SYNC_SOURCE_TYPE=snap.sourceType||snap.source||"file";
       SYNC_SOURCE_ID=snap.sourceId||"";
+      if(typeof GSHEET_GID!=="undefined") GSHEET_GID=snap.gsheetGid||"";   // V28.1
       HEALTH_SCORE=snap.healthScore||0;
     }
     let rows=snap.data.map(r=>({...r, _extra: r._extra||{}}));
@@ -2195,7 +2257,7 @@ body{font-family:'Sarabun','Noto Sans Thai',sans-serif;background:#f0f4f8;min-he
 .ksub{font-size:10px;color:#94a3b8;margin-top:2px}
 .crow{display:grid;grid-template-columns:1fr 1.6fr;gap:11px;margin-bottom:13px}
 /* Critical: chart containers have fixed dimensions so Chart.js can render */
-.chart-wrap{position:relative;width:100%;height:240px}
+.chart-wrap{position:relative;width:100%;height:240px;overflow:hidden}
 .chart-wrap.tall{height:620px}
 .chart-wrap.small{height:200px}
 .chart-wrap canvas{display:block;width:100%!important;height:100%!important}
@@ -2230,6 +2292,8 @@ tfoot tr td{background:linear-gradient(90deg,#f0f9ff,#faf5ff)!important;border-t
 .etab{display:none}.etab.active{display:block}
 .foot{text-align:center;font-size:10px;color:#94a3b8;padding:12px;border-top:1px solid #e2e8f0;margin-top:6px}
 @media(max-width:600px){.crow{grid-template-columns:1fr}.kpi{min-width:110px}.kval{font-size:18px}.gl{width:100px}.gst{display:none}.hdr-st{display:none}.chart-wrap{height:200px}}
+/* V28 — presentation-ready print/PDF: prevent card & chart cut-off, drop interactive UI */
+@media print{body{background:#fff;-webkit-print-color-adjust:exact;print-color-adjust:exact}.no-print{display:none!important}.card{page-break-inside:avoid;box-shadow:none;border:1px solid #e2e8f0}.crow{grid-template-columns:1fr 1fr}.chart-wrap{height:300px}.chart-wrap.tall{height:520px}.ov,.gsc{overflow:visible}table{font-size:10px}tr{page-break-inside:avoid}.hdr{-webkit-print-color-adjust:exact;print-color-adjust:exact}@page{size:A4 landscape;margin:9mm}}
 </style>
 </head>
 <body>
@@ -2488,7 +2552,7 @@ function drawCharts(d){
       data:{labels:cats,datasets:[{data:cats.map(c=>d.filter(x=>cl(x.status)===c).length),backgroundColor:dc,borderWidth:2,borderColor:"#fff",hoverOffset:6}]},
       options:{
         maintainAspectRatio:false,
-        plugins:{legend:{display:false},tooltip:{callbacks:{label:ctx=>\`\${ctx.label}: \${ctx.raw} โครงการ (กดเพื่อกรอง)\`}}},
+        plugins:{legend:{display:false},datalabels:{display:false},tooltip:{callbacks:{label:ctx=>\`\${ctx.label}: \${ctx.raw} โครงการ (กดเพื่อกรอง)\`}}},
         cutout:"55%",
         onHover:(e,el)=>{e.native.target.style.cursor=el.length?"pointer":"default";},
         onClick:(e,elements)=>{
@@ -2545,7 +2609,7 @@ function drawCharts(d){
         type:"doughnut",
         data:{labels:rawLabels,datasets:[{data:filteredCounts,backgroundColor:rawLabels.map((_,i)=>palette[i%palette.length]),borderWidth:2,borderColor:"#fff",hoverOffset:6}]},
         options:{maintainAspectRatio:false,
-          plugins:{legend:{display:false},tooltip:{callbacks:{label:ctx=>\`\${ctx.label}: \${ctx.raw} โครงการ (กดเพื่อกรอง)\`}}},
+          plugins:{legend:{display:false},datalabels:{display:false},tooltip:{callbacks:{label:ctx=>\`\${ctx.label}: \${ctx.raw} โครงการ (กดเพื่อกรอง)\`}}},
           cutout:"55%",
           onHover:(e,el)=>{e.native.target.style.cursor=el.length?"pointer":"default";},
           onClick:(e,elements)=>{
@@ -2611,7 +2675,7 @@ function drawCharts(d){
     if(aChart)aChart.destroy();
     aChart=new Chart(el3,{type:"line",
       data:{labels:pts.map(p=>p.x),datasets:[{data:pts.map(p=>p.y),fill:true,backgroundColor:"rgba(14,165,233,.12)",borderColor:"#0ea5e9",borderWidth:2,pointRadius:0,tension:0.4}]},
-      options:{maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{ticks:{font:{size:9},maxTicksLimit:10},grid:{color:"#f1f5f9"}},y:{ticks:{font:{size:9}},grid:{color:"#f1f5f9"}}}}
+      options:{maintainAspectRatio:false,plugins:{legend:{display:false},datalabels:{display:false}},scales:{x:{ticks:{font:{size:9},maxTicksLimit:10},grid:{color:"#f1f5f9"}},y:{ticks:{font:{size:9}},grid:{color:"#f1f5f9"}}}}
     });
   }
 }
@@ -3016,14 +3080,32 @@ function doExport(){
 // ── END EXPORT ENGINE ─────────────────────────────────────
 document.addEventListener("DOMContentLoaded",()=>{
   const now=new Date();
-  document.getElementById("today-lbl").textContent=now.toLocaleDateString("th-TH",{year:"numeric",month:"long",day:"numeric"})+" | Executive Overview · V25 Hybrid (Excel + Google Sheets)";
+  document.getElementById("today-lbl").textContent=now.toLocaleDateString("th-TH",{year:"numeric",month:"long",day:"numeric"})+" | Executive Overview · V28 (Excel + Google Sheets)";
   const restored=restoreFromStorage();
   buildFilters();applyFilters();
   if(!restored){
     // first time: clear any stale storage just in case
     try{ localStorage.removeItem("pv_dashboard_v24"); localStorage.removeItem("pv_dashboard_v25"); }catch(e){}
+  } else {
+    // V28.1 FIX: if the cached source was a live Google Sheet, resume polling so a
+    // page refresh re-establishes the live connection instead of showing stale data.
+    resumeLiveSync();
   }
 });
+
+// V28.1: re-establish Google Sheets live sync after a page reload (was lost on refresh)
+function resumeLiveSync(){
+  try{
+    if(SYNC_SOURCE_TYPE==="gsheet" && SYNC_SOURCE_ID && typeof connectGoogleSheet==="function"){
+      const urlEl=document.getElementById("gsheet-url");
+      if(urlEl && !urlEl.value){
+        urlEl.value="https://docs.google.com/spreadsheets/d/"+SYNC_SOURCE_ID+"/edit"+(GSHEET_GID?("#gid="+GSHEET_GID):"");
+      }
+      GSHEET_TEXT_HASH="";           // force a fresh fetch so we pull the latest, not the cache
+      connectGoogleSheet();          // resumes the 60s polling loop + refreshes immediately
+    }
+  }catch(e){ console.warn("resumeLiveSync failed:",e); }
+}
 
 // ── Project Detail Modal ──────────────────────────────────
 function openDetail(row){
@@ -3141,20 +3223,24 @@ function dataAgeText(ts){
 }
 
 // ── PART 7 / 8: Data quality & completeness ──────────────────────────────
-const REQUIRED_FIELDS=[
+// V28.1 FIX: completeness is STAGE-AWARE. Start Date & Value are not expected for
+// early-stage pipeline rows (Bidding/Hold/Lost), so they are not required for every
+// project — that previously forced completeness to ~0% and dragged Health down.
+const CORE_REQUIRED=[
   {k:"name",label:"Project Name"},
   {k:"contract",label:"Project Type"},
   {k:"status",label:"Status L1"},
   {k:"sub_status",label:"Status L2"},
-  {k:"start",label:"Start Date"},
-  {k:"value",label:"Value"},
   {k:"lead",label:"Owner"}
 ];
 function isEmptyVal(v){ if(v==null) return true; const s=String(v).trim(); return s===""||s==="-"||s==="—"; }
 function computeQuality(d){
   d=d||[]; let complete=0; const missing=[];
   d.forEach(r=>{
-    const miss=REQUIRED_FIELDS.filter(f=>isEmptyVal(r[f.k])).map(f=>f.label);
+    const req=CORE_REQUIRED.slice();
+    // Won projects are expected to carry a recorded deal value (revenue tracking)
+    if(String(r.status||"").trim()==="Win") req.push({k:"value",label:"Value"});
+    const miss=req.filter(f=>isEmptyVal(r[f.k])).map(f=>f.label);
     if(miss.length===0) complete++;
     else missing.push({name:r.name||"(ไม่มีชื่อ)", no:r.no, missing:miss});
   });
@@ -3198,39 +3284,29 @@ function renderExecPanel(q){
   const el=document.getElementById("exec-panel-body"); if(!el) return;
   q=q||__EXQ||{total:0};
   const sb=statusBadge();
-  const rows=[
-    ["Source", sourceLabel()],
-    ["Records", q.total+" Projects"],
-    ["Last Sync", LAST_SYNC_TIME?new Date(LAST_SYNC_TIME).toLocaleString("th-TH"):"—"],
-    ["Last Modified", SYNC_LAST_MOD_TIME?new Date(SYNC_LAST_MOD_TIME).toLocaleString("th-TH"):"—"],
-    ["Updated By", SYNC_LAST_EDITOR||"Unknown"],
-    ["Data Age", dataAgeText(SYNC_LAST_MOD_TIME||LAST_SYNC_TIME)],
-    ["Version", "V25"]
-  ];
-  el.innerHTML = rows.map(r=>`<div style="display:flex;justify-content:space-between;gap:10px;padding:3px 0;border-bottom:1px dashed #e2e8f0"><span style="color:#94a3b8">${r[0]}</span><b style="color:#1e293b;text-align:right">${r[1]}</b></div>`).join("")
-    + `<div style="display:flex;justify-content:space-between;gap:10px;padding:6px 0 0"><span style="color:#94a3b8">Status</span><b style="color:${sb.c}">${sb.t}</b></div>`;
+  // V28.1 — compact header tile (white text on the blue header bar)
+  el.innerHTML =
+    `<div style="font-size:15px;font-weight:900;line-height:1.15">${sb.t}</div>`
+    + `<div class="pv-htile-s">${sourceLabel()} · ${q.total} Projects</div>`
+    + `<div class="pv-htile-s">Sync: ${LAST_SYNC_TIME?new Date(LAST_SYNC_TIME).toLocaleTimeString("th-TH"):"—"}${(SYNC_LAST_EDITOR&&SYNC_LAST_EDITOR!=="Unknown")?(" · "+SYNC_LAST_EDITOR):""}</div>`;
 }
 
-// ══ PART 7 + 10: Executive KPI cards (Data Quality + Dashboard Health) ══════
+// ══ PART 7 + 10: Executive KPI tiles (Data Completeness + Dashboard Health) ══
 function renderExecKPIs(q){
   q=q||__EXQ||{total:0,complete:0,incomplete:0,pct:100};
   const dq=document.getElementById("exec-kpi-quality");
   if(dq){
-    dq.innerHTML=`<div style="font-weight:800;font-size:13px;color:#0369a1;margin-bottom:8px">📊 Data Quality</div>
-      <div style="font-size:30px;font-weight:900;color:#0ea5e9;line-height:1">${q.pct.toFixed(1)}%</div>
-      <div style="font-size:12px;color:#64748b;margin-top:6px;line-height:1.7">
-        ${q.total} Projects<br>
-        <span style="color:#16a34a;font-weight:700">${q.complete} Complete</span> ·
-        <span style="color:#ef4444;font-weight:700">${q.incomplete} Missing</span>
-      </div>`;
+    dq.innerHTML=`<div class="pv-htile-h">📊 Data Completeness</div>
+      <div class="pv-htile-v">${q.pct.toFixed(0)}%</div>
+      <div class="pv-htile-s"><b>${q.complete}</b>/${q.total} ครบถ้วน${q.incomplete?` · <span style="color:#fde68a;font-weight:700">${q.incomplete} ตรวจสอบ</span>`:""}</div>`;
   }
-  const hs=HEALTH_SCORE, hc=healthColor(hs);
+  const hs=HEALTH_SCORE;
   const hl=document.getElementById("exec-kpi-health");
   if(hl){
-    hl.innerHTML=`<div style="font-weight:800;font-size:13px;color:#0369a1;margin-bottom:8px">🏆 Dashboard Health</div>
-      <div style="font-size:30px;font-weight:900;color:${hc};line-height:1">${hs}<span style="font-size:16px;color:#94a3b8">/100</span></div>
-      <div style="font-size:13px;font-weight:800;color:${hc};margin-top:6px">${healthLabel(hs)}</div>
-      <div style="height:7px;background:#e2e8f0;border-radius:5px;margin-top:8px;overflow:hidden"><div style="height:100%;width:${hs}%;background:${hc};border-radius:5px;transition:width .4s"></div></div>`;
+    hl.innerHTML=`<div class="pv-htile-h">🏆 Dashboard Health</div>
+      <div class="pv-htile-v">${hs}<span style="font-size:13px;opacity:.7">/100</span></div>
+      <div class="pv-htile-s">${healthLabel(hs)}</div>
+      <div style="height:5px;background:rgba(255,255,255,.25);border-radius:4px;margin-top:5px;overflow:hidden"><div style="height:100%;width:${hs}%;background:#fff;border-radius:4px;transition:width .4s"></div></div>`;
   }
 }
 
@@ -3523,20 +3599,13 @@ function execExportLine(){
 // ── Mount executive UI into the DOM (body exists — script is at end) ───────
 (function mountExecLayer(){
   const body=document.querySelector(".body");
-  if(body && !document.getElementById("exec-layer")){
-    const layer=document.createElement("div");
-    layer.id="exec-layer";
-    layer.innerHTML=
-      '<div id="offline-banner" style="display:none;background:#fff7ed;border:1px solid #fed7aa;border-radius:12px;padding:10px 16px;margin-bottom:12px;font-size:12px;color:#9a3412;font-weight:600;align-items:center;gap:8px"></div>'+
-      '<div id="exec-grid" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:12px;margin-bottom:14px">'+
-        '<div class="card" id="exec-panel-card" style="margin-bottom:0;border:1px solid #bae6fd;background:linear-gradient(135deg,#f0f9ff,#ffffff)">'+
-          '<div style="display:flex;align-items:center;gap:8px;font-weight:800;font-size:14px;color:#0369a1;margin-bottom:10px">📡 LIVE DATA STATUS</div>'+
-          '<div id="exec-panel-body" style="font-size:12px;color:#334155"></div>'+
-        '</div>'+
-        '<div class="card" id="exec-kpi-quality" style="margin-bottom:0"></div>'+
-        '<div class="card" id="exec-kpi-health" style="margin-bottom:0"></div>'+
-      '</div>';
-    body.insertBefore(layer, body.firstChild);
+  // V28.1: the 3 executive status cards now live as compact tiles in the header.
+  // Only the offline banner is mounted at the top of the body here.
+  if(body && !document.getElementById("offline-banner")){
+    const ob=document.createElement("div");
+    ob.id="offline-banner";
+    ob.style.cssText="display:none;background:#fff7ed;border:1px solid #fed7aa;border-radius:12px;padding:10px 16px;margin-bottom:12px;font-size:12px;color:#9a3412;font-weight:600;align-items:center;gap:8px";
+    body.insertBefore(ob, body.firstChild);
   }
   // Missing Information panel → inside overview, just under the KPI row
   const kpirow=document.getElementById("kpi-row");
@@ -3576,19 +3645,20 @@ setInterval(()=>{ try{ renderExecPanel(__EXQ); renderLiveBadges(__EXQ); HEALTH_S
     if(!q||!q.missing||!q.missing.length){ el.style.display="none"; return; }
     el.style.display="block";
     var n=q.missing.length;
+    var esc=(typeof escapeHtml==="function")?escapeHtml:function(s){return String(s==null?"":s);};
     var items=q.missing.slice(0,80).map(function(m){
       var nm=JSON.stringify(m.name);
       return '<div class="pv-miss-item" onclick=\'jumpToProject('+nm+')\'>'+
-        '<span class="pv-miss-name">'+m.name+'</span>'+
-        '<span class="pv-miss-tag">Missing: '+m.missing.join(", ")+'</span></div>';
+        '<span class="pv-miss-name">'+esc(m.name)+'</span>'+
+        '<span class="pv-miss-tag">ขาด: '+esc(m.missing.join(", "))+'</span></div>';
     }).join("");
     el.innerHTML=
       '<button type="button" class="pv-acc-head" onclick="togglePvMissing()" aria-expanded="'+PV_MISS_OPEN+'">'+
-        '<span>⚠ Missing Information<span class="pv-acc-count">'+n+'</span></span>'+
+        '<span>📋 Data Completion Review<span class="pv-acc-count">'+n+'</span></span>'+
         '<span class="pv-acc-chevron">'+(PV_MISS_OPEN?"▲":"▼")+'</span>'+
       '</button>'+
       '<div class="pv-acc-body" style="display:'+(PV_MISS_OPEN?"block":"none")+'">'+
-        '<div class="pv-miss-hint">'+n+' โครงการข้อมูลไม่ครบ — คลิกชื่อโครงการเพื่อไปยังแถวในตาราง</div>'+
+        '<div class="pv-miss-hint">'+n+' โครงการที่ข้อมูลยังไม่ครบ — คลิกชื่อโครงการเพื่อไปตรวจสอบที่แถวในตาราง</div>'+
         '<div class="pv-miss-list">'+items+'</div>'+
       '</div>';
   };
@@ -3736,6 +3806,114 @@ setInterval(()=>{ try{ renderExecPanel(__EXQ); renderLiveBadges(__EXQ); HEALTH_S
   if(typeof renderAll==="function"){
     var _origRenderAll=renderAll;
     renderAll=function(){ var r=_origRenderAll.apply(this,arguments); try{ relocateMissing(); addFsButtons(); fixCharts(); }catch(e){} return r; };
+  }
+})();
+
+// ══════════════════════════════════════════════════════════════════════════
+// ║  PHASE 4 — V28 EXECUTIVE POLISH & STABILIZATION  (UI only, additive)     ║
+// ║  Version standardization · Executive metrics · Predictive action panel   ║
+// ║  Reuses existing globals (FILTERED/ALL/classify/isEmptyVal/fmt/escapeHtml)║
+// ══════════════════════════════════════════════════════════════════════════
+(function PHASE4(){
+  var VERSION="V28";
+  // ── M: Version standardization (visible labels only — no cache logic change) ─
+  try{
+    if(/V2[0-9]/.test(document.title)) document.title=document.title.replace(/V2[0-9]/,VERSION);
+    var sub=document.getElementById("today-lbl");
+    if(sub && /V2[0-9]/.test(sub.textContent)) sub.textContent=sub.textContent.replace(/V2[0-9]/,VERSION);
+  }catch(e){}
+
+  // ── shared helpers (defensive — degrade gracefully if a global is absent) ──
+  function rows(){ try{ return (typeof FILTERED!=="undefined"&&FILTERED&&FILTERED.length)?FILTERED:((typeof ALL!=="undefined"&&ALL)?ALL:[]); }catch(e){ return []; } }
+  function L1(x){ return (typeof classify==="function")?classify(x.status):(x.status||""); }
+  function empty(v){ return (typeof isEmptyVal==="function")?isEmptyVal(v):(v==null||String(v).trim()===""||String(v).trim()==="-"); }
+  function esc(s){ return (typeof escapeHtml==="function")?escapeHtml(s):String(s==null?"":s); }
+  function fmtN(n,dg){ return (typeof fmt==="function")?fmt(n,dg):(n==null?"—":Number(n).toLocaleString("th-TH",{maximumFractionDigits:dg||0})); }
+  function parseDate(v){ if(!v) return null; var d=new Date(v); return isNaN(d.getTime())?null:d; }
+  // follow-up date is an extra column (e.g. "วันที่ Follow Up"), stored in _extra as YYYY-MM-DD
+  function followupOf(x){
+    if(x.followup) return x.followup;
+    var ex=x._extra; if(!ex) return null;
+    var k=Object.keys(ex).find(function(kk){ return kk.toLowerCase().indexOf("follow")>-1; });
+    return k?ex[k]:null;
+  }
+
+  // ── C: Executive metrics strip (additive, derived from existing fields) ───
+  function buildMetrics(){
+    var kr=document.getElementById("kpi-row"); if(!kr) return;
+    var host=document.getElementById("pv-exec-metrics");
+    if(!host){ host=document.createElement("div"); host.id="pv-exec-metrics"; kr.parentNode.insertBefore(host, kr.nextSibling); }
+    var d=rows(), total=d.length;
+    if(!total){ host.style.display="none"; return; }
+    host.style.display="grid";
+    var win=d.filter(function(x){return L1(x)==="Win";}).length;
+    var conv=Math.round(win/total*100);
+    var kwps=d.map(function(x){return +x.kwp;}).filter(function(n){return !isNaN(n)&&n>0;});
+    var avgKwp=kwps.length?kwps.reduce(function(a,b){return a+b;},0)/kwps.length:0;
+    var vals=d.map(function(x){return +x.value;}).filter(function(n){return !isNaN(n)&&n>0;});
+    var avgVal=vals.length?vals.reduce(function(a,b){return a+b;},0)/vals.length:0;
+    var prop=d.filter(function(x){ return L1(x)==="Bidding" && /proposal/i.test(String(x.sub_status||"")); }).length;
+    var cards=[
+      {l:"Pipeline Conversion",v:conv+"%",s:win+" Win / "+total+" total",c:"#8b5cf6"},
+      {l:"Avg Project Size",v:kwps.length?fmtN(avgKwp,0)+" kWp":"—",s:kwps.length+" projects w/ kWp",c:"#0ea5e9"},
+      {l:"Avg Deal Value",v:vals.length?"฿"+fmtN(avgVal,0):"—",s:vals.length+" projects w/ value",c:"#22c55e"},
+      {l:"Proposal Outstanding",v:String(prop),s:"Bidding · proposal stage",c:"#f59e0b"}
+    ];
+    host.innerHTML=cards.map(function(k){
+      return '<div class="pv-em" style="--c:'+k.c+'"><div class="pv-em-l">'+esc(k.l)+'</div><div class="pv-em-v">'+esc(k.v)+'</div><div class="pv-em-s">'+esc(k.s)+'</div></div>';
+    }).join("");
+  }
+
+  // ── F: Predictive action panel (simple rule-based, severity Low/Med/High) ─
+  function buildActions(){
+    var tab=document.getElementById("tab-alerts"); if(!tab) return;
+    var host=document.getElementById("pv-actions");
+    if(!host){ host=document.createElement("div"); host.id="pv-actions"; host.className="card"; tab.insertBefore(host, tab.firstChild); }
+    var d=rows();
+    var now=new Date(); now.setHours(0,0,0,0);
+    var cat={
+      followup:{title:"⏰ Follow-Up Overdue",sev:"high",items:[]},
+      proposal:{title:"📄 Proposal Outstanding",sev:"med",items:[]},
+      lead:{title:"👤 Missing Lead Sale",sev:"med",items:[]},
+      engineer:{title:"🛠 Missing Engineer",sev:"low",items:[]},
+      contract:{title:"📑 Missing Contract Type",sev:"low",items:[]}
+    };
+    d.forEach(function(x){
+      var l1=L1(x), active=(l1==="Bidding"||l1==="Hold"||l1==="Win");
+      if(!active) return;
+      var fu=parseDate(followupOf(x));
+      if(fu){ var days=Math.round((now-fu)/86400000); if(days>0) cat.followup.items.push({name:x.name,tag:days+"d overdue"}); }
+      if(l1==="Bidding" && /proposal/i.test(String(x.sub_status||""))) cat.proposal.items.push({name:x.name,tag:String(x.sub_status||"Proposal")});
+      if(empty(x.lead)) cat.lead.items.push({name:x.name,tag:l1});
+      if(l1==="Win" && empty(x.engineer)) cat.engineer.items.push({name:x.name,tag:l1});
+      if(empty(x.contract)) cat.contract.items.push({name:x.name,tag:l1});
+    });
+    var keys=Object.keys(cat).filter(function(k){return cat[k].items.length;});
+    var totalN=keys.reduce(function(a,k){return a+cat[k].items.length;},0);
+    var sevClass={high:"pv-sev-high",med:"pv-sev-med",low:"pv-sev-low"};
+    var body;
+    if(!totalN){
+      body='<div class="pv-act-empty">✅ ไม่มีรายการที่ต้องดำเนินการเร่งด่วน — ข้อมูลโครงการครบถ้วน</div>';
+    } else {
+      body='<div class="pv-act-grid">'+keys.map(function(k){
+        var c=cat[k], top=c.items.slice(0,6);
+        var lis=top.map(function(it){
+          return '<div class="pv-act-item" onclick=\'(window.jumpToProject||function(){})('+JSON.stringify(String(it.name))+')\'><span>'+esc(it.name)+'</span><span class="pv-act-tag">'+esc(it.tag)+'</span></div>';
+        }).join("");
+        var more=c.items.length>top.length?'<div class="pv-act-more">+ '+(c.items.length-top.length)+' more…</div>':"";
+        return '<div class="pv-act-cat"><h4>'+c.title+'<span class="pv-act-sev '+sevClass[c.sev]+'">'+c.sev+' · '+c.items.length+'</span></h4>'+lis+more+'</div>';
+      }).join("")+'</div>';
+    }
+    host.innerHTML='<div class="card-title">🎯 Action Required <span style="font-weight:400;color:#94a3b8;font-size:12px">(สรุปรายการที่ควรติดตาม — กดชื่อโครงการเพื่อไปยังแถวในตาราง)</span></div>'+body;
+  }
+
+  function refresh(){ try{ buildMetrics(); }catch(e){} try{ buildActions(); }catch(e){} }
+
+  // initial paint + refresh after every dashboard render (chained, no logic change)
+  if(document.readyState!=="loading") refresh(); else document.addEventListener("DOMContentLoaded",refresh);
+  if(typeof renderAll==="function"){
+    var _p4=renderAll;
+    renderAll=function(){ var r=_p4.apply(this,arguments); try{ refresh(); }catch(e){} return r; };
   }
 })();
 
