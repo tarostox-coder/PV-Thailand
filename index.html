@@ -2296,6 +2296,13 @@ body{font-family:'Sarabun','Noto Sans Thai',sans-serif;background:#f0f4f8;min-he
 .chart-wrap.tall{height:620px}
 .chart-wrap.small{height:200px}
 .chart-wrap canvas{display:block;width:100%!important;height:100%!important}
+.crow2{display:grid;grid-template-columns:1fr 1fr;gap:11px;margin-bottom:13px;align-items:stretch}
+.edonut-row{display:flex;gap:14px;align-items:center}
+.edonut-row .chart-wrap{flex:0 0 auto;width:min(210px,46%);height:auto;aspect-ratio:1/1}
+.edonut-side{flex:1 1 auto;display:flex;flex-wrap:wrap;gap:5px 10px;align-content:center;max-height:210px;overflow:auto;font-size:11px;color:#475569}
+.kclick{cursor:pointer;transition:transform .12s,box-shadow .12s}
+.kclick:hover{transform:translateY(-3px);box-shadow:0 8px 20px rgba(15,23,42,.13)}
+@media(max-width:600px){.crow2{grid-template-columns:1fr}.edonut-row{flex-direction:column}.edonut-row .chart-wrap{width:min(220px,90%)}.edonut-side{max-height:none;justify-content:center}}
 table{width:100%;border-collapse:collapse;font-size:11px}
 th{padding:7px 8px;text-align:left;color:#64748b;font-weight:700;border-bottom:2px solid #e2e8f0;white-space:nowrap;background:#f8fafc;cursor:pointer;user-select:none}
 th:hover{background:#f1f5f9}
@@ -2546,6 +2553,7 @@ function clearStatusFilter(){
   const msg=document.getElementById("clicked-status-msg");
   if(msg)msg.style.display="none";
 }
+function escrollTo(id){const cv=document.getElementById(id);if(cv){const c=cv.closest(".card")||cv;c.scrollIntoView({behavior:"smooth",block:"center"});}}
 function drawCharts(d){
   const cats=["Bidding","Hold","Win","Lost"];
   const dc=cats.map(c=>SC[c]);
@@ -2718,10 +2726,11 @@ function drawCharts(d){
 function renderOv(d){
   const s=gst(d);
   const vDisp=s.hasVal?"฿"+Math.round(s.tval).toLocaleString("th-TH"):"—";
-  const km=[{l:"Total Projects",v:s.total,icon:"📋",c:"#64748b",sub:"ทั้งหมด"},{l:"Bidding",v:s.inprog,icon:"📘",c:"#3b82f6",sub:"อยู่ระหว่าง Bidding"},{l:"Hold",v:s.hold,icon:"🟡",c:"#f59e0b",sub:"ชะลอ"},{l:"Win",v:s.win,icon:"🏆",c:"#22c55e",sub:fm(s.wkwp,1)+" kWp"},{l:"Lost",v:s.lost,icon:"❌",c:"#ef4444",sub:s.lost+" ปิดงาน"},{l:"Total Capacity",v:fm(s.tkwp,1)+" kWp",icon:"☀️",c:"#0ea5e9",sub:"Avg "+fm(s.avg,0)+" kWp/proj"},{l:"มูลค่ารวม (฿)",v:vDisp,icon:"💰",c:"#8b5cf6",sub:s.hasVal?s.valCount+" โครงการ":"ยังไม่กรอก"}];
-  const kh=km.map(k=>\`<div class="kpi" style="--c:\${k.c}"><div class="klbl">\${k.l}<span>\${k.icon}</span></div><div class="kval" style="font-size:\${String(k.v).length>12?"16px":"20px"}">\${k.v}</div><div class="ksub">\${k.sub}</div></div>\`).join("");
+  const km=[{l:"Total Projects",v:s.total,icon:"📋",c:"#64748b",sub:"ทั้งหมด",f:"All"},{l:"Bidding",v:s.inprog,icon:"📘",c:"#3b82f6",sub:"อยู่ระหว่าง Bidding",f:"Bidding"},{l:"Hold",v:s.hold,icon:"🟡",c:"#f59e0b",sub:"ชะลอ",f:"Hold"},{l:"Win",v:s.win,icon:"🏆",c:"#22c55e",sub:fm(s.wkwp,1)+" kWp",f:"Win"},{l:"Lost",v:s.lost,icon:"❌",c:"#ef4444",sub:s.lost+" ปิดงาน",f:"Lost"},{l:"Total Capacity",v:fm(s.tkwp,1)+" kWp",icon:"☀️",c:"#0ea5e9",sub:"Avg "+fm(s.avg,0)+" kWp/proj",scroll:"echart-bar"},{l:"มูลค่ารวม (฿)",v:vDisp,icon:"💰",c:"#8b5cf6",sub:s.hasVal?s.valCount+" โครงการ":"ยังไม่กรอก",scroll:"echart-bar-value"}];
+  const kh=km.map(k=>{const oc=k.f!=null?(k.f==="All"?"clearStatusFilter()":"filterByStatus('"+k.f+"')"):(k.scroll?"escrollTo('"+k.scroll+"')":"");const clk=(k.f!=null||k.scroll)?" kclick":"";return \`<div class="kpi\${clk}" style="--c:\${k.c}" \${oc?\`onclick="\${oc}"\`:""}><div class="klbl">\${k.l}<span>\${k.icon}</span></div><div class="kval" style="font-size:\${String(k.v).length>12?"16px":"20px"}">\${k.v}</div><div class="ksub">\${k.sub}</div></div>\`;}).join("");
   // Restructured columns: Core has business fields, Start/End/Progress moved to extras (yellow)
   // V24: Added Sub-Status (L2) column right after Status (L1)
+  // V28.2: default shows columns through Sub-Status (L2); the rest collapse behind the toggle
   const cc=[
     {k:"no",l:"#"},
     {k:"name",l:"ชื่อโครงการ"},
@@ -2733,24 +2742,23 @@ function renderOv(d){
     {k:"lead",l:"Lead"},
     {k:"engineer",l:"Engineer"},
     {k:"status",l:"Status (L1)"},
-    {k:"sub_status",l:"Sub-Status (L2)"},
-    {k:"_x_Contact",l:"Contact"},
-    {k:"_x_Description",l:"Description"},
-    {k:"_x_Next Action",l:"Next Action"},
-    {k:"_x_วันที่ Follow Up",l:"วันที่ Follow Up"}
+    {k:"sub_status",l:"Sub-Status (L2)"}
   ];
-  // Hidden extras (only shown when SHEX toggle is ON): Start Date, End Date, Progress
+  // Hidden by default — revealed by the toggle
+  const infoExtras=[
+    {k:"_x_Contact",l:"Contact",ex:true},
+    {k:"_x_Description",l:"Description",ex:true},
+    {k:"_x_Next Action",l:"Next Action",ex:true},
+    {k:"_x_วันที่ Follow Up",l:"วันที่ Follow Up",ex:true}
+  ];
   const dateExtras=[
     {k:"start",l:"Start Date",ex:true},
     {k:"end",l:"End Date",ex:true},
     {k:"progress",l:"Progress",ex:true}
   ];
-  // Other extras from Excel (excluding the ones already in core)
   const promotedKeys=["Contact","Description","Next Action","วันที่ Follow Up","THB / Watt","THB/Watt","thb/watt","thb / watt","Days Left"];
   const otherExtras=EXCOLS.filter(e=>!promotedKeys.some(p=>e.toLowerCase().includes(p.toLowerCase()))).map(e=>({k:"_x_"+e,l:e,ex:true}));
-  // SHEX OFF (default): only core columns shown — Start/End/Progress hidden
-  // SHEX ON: show core + dateExtras + otherExtras
-  const ac=SHEX?[...cc,...dateExtras,...otherExtras]:cc;
+  const ac=SHEX?[...cc,...infoExtras,...dateExtras,...otherExtras]:cc;
   const srt=SF?[...d].sort((a,b)=>{const av=a[SF]??0,bv=b[SF]??0;return(av>bv?1:av<bv?-1:0)*SD;}):d;
   const pg=srt.slice((PG-1)*PS,PG*PS);
   const th=ac.map(c=>\`<th \${!c.ex?\`onclick="sc('\${c.k}')"\`:""} \${c.ex?'style="background:#fefce8;color:#854d0e"':""}>\${c.l}\${!c.ex?'<span style="font-size:9px;margin-left:2px;opacity:.4">⇅</span>':""}</th>\`).join("");
@@ -2798,30 +2806,29 @@ function renderOv(d){
   if(tp>1){pgh=\`<span style="font-size:11px;color:#64748b">หน้า \${PG}/\${tp}</span><button class="pbt" onclick="cp(\${Math.max(1,PG-1)})">‹</button>\`;for(let p=Math.max(1,PG-2);p<=Math.min(tp,PG+2);p++)pgh+=\`<button class="pbt \${p===PG?"active":""}" onclick="cp(\${p})">\${p}</button>\`;pgh+=\`<button class="pbt" onclick="cp(\${Math.min(tp,PG+1)})">›</button>\`;}
   // Toggle includes Start/End/Progress (3 default extras) + other Excel extras
   const promotedKeys2=["Contact","Description","Next Action","วันที่ Follow Up","THB / Watt","THB/Watt","thb/watt","thb / watt","Days Left"];
-  const hiddenCount=3+EXCOLS.filter(e=>!promotedKeys2.some(p=>e.toLowerCase().includes(p.toLowerCase()))).length;
-  const exb=hiddenCount>0?\`<button onclick="SHEX=!SHEX;PG=1;renderOv(DATA)" style="border:1px solid #93c5fd;border-radius:6px;padding:4px 9px;font-size:10px;color:#3b82f6;background:#eff6ff;cursor:pointer;font-family:inherit">\${SHEX?"▲ ซ่อน Extra Cols":"▼ แสดง Extra Cols ("+hiddenCount+") 🆕"}</button>\`:"";
+  const hiddenCount=7+EXCOLS.filter(e=>!promotedKeys2.some(p=>e.toLowerCase().includes(p.toLowerCase()))).length;
+  const exb=hiddenCount>0?\`<button onclick="SHEX=!SHEX;PG=1;renderOv(DATA)" style="border:1px solid #93c5fd;border-radius:6px;padding:4px 9px;font-size:10px;color:#3b82f6;background:#eff6ff;cursor:pointer;font-family:inherit">\${SHEX?"▲ ซ่อนคอลัมน์เพิ่มเติม":"▼ แสดงคอลัมน์เพิ่มเติม ("+hiddenCount+") — Contact · Description · Follow Up"}</button>\`:"";
   
   document.getElementById("et-overview").innerHTML=\`<div class="krow">\${kh}</div>
-  <div class="crow">
-    <div style="display:flex;flex-direction:column;gap:14px">
-      <div class="card" style="margin-bottom:0"><div class="shtitle">📊 Status Distribution (สรุป 4 หมวด)</div>
-        <div class="chart-wrap small"><canvas id="echart-donut"></canvas></div>
-        <div id="echart-donut-leg" style="display:flex;flex-wrap:wrap;gap:5px 10px;margin-top:7px;justify-content:center;font-size:11px;color:#475569"></div>
-      </div>
-      <div class="card" id="status-detail-export" style="margin-bottom:0">
-        <div class="shtitle">🎯 Sub-Status Detail (Layer 2 — รายละเอียดสถานะย่อย)</div>
-        <div style="font-size:10px;color:#94a3b8;margin-bottom:8px">แสดงสถานะย่อย (Layer 2) ของทุกโครงการ — กดที่กราฟเพื่อกรองข้อมูล</div>
-        <div class="chart-wrap small"><canvas id="echart-donut-detail"></canvas></div>
-        <div id="echart-donut-detail-leg" style="display:flex;flex-wrap:wrap;gap:5px 10px;margin-top:7px;justify-content:center;font-size:11px;color:#475569"></div>
-      </div>
-    </div>
-    <div class="card"><div class="shtitle">📊 Top 15 by Capacity (kWp)</div>
+  <div class="crow2">
+    <div class="card" style="margin-bottom:0${d.some(x=>x.value&&x.value>0)?"":";grid-column:1/-1"}"><div class="shtitle">📊 Top 15 by Capacity (kWp)</div>
       <div class="chart-wrap tall"><canvas id="echart-bar"></canvas></div>
     </div>
+    ${d.some(x=>x.value&&x.value>0)?`<div class="card" style="margin-bottom:0"><div class="shtitle">💰 Top 15 by มูลค่าโครงการ (บาท)</div>
+      <div class="chart-wrap tall"><canvas id="echart-bar-value"></canvas></div>
+    </div>`:""}
   </div>
-  ${d.some(x=>x.value&&x.value>0)?`<div class="card"><div class="shtitle">💰 Top 15 by มูลค่าโครงการ (บาท)</div>
-    <div class="chart-wrap tall"><canvas id="echart-bar-value"></canvas></div>
-  </div>`:""}
+  <div class="crow2">
+    <div class="card" style="margin-bottom:0"><div class="shtitle">📊 Status Distribution (สรุป 4 หมวด)</div>
+      <div style="font-size:10px;color:#94a3b8;margin-bottom:8px">ภาพรวมสถานะหลัก (Layer 1) — กดที่กราฟ, legend หรือกล่อง KPI เพื่อกรอง</div>
+      <div class="edonut-row"><div class="chart-wrap"><canvas id="echart-donut"></canvas></div><div id="echart-donut-leg" class="edonut-side"></div></div>
+    </div>
+    <div class="card" id="status-detail-export" style="margin-bottom:0">
+      <div class="shtitle">🎯 Sub-Status Detail (Layer 2 — รายละเอียดสถานะย่อย)</div>
+      <div style="font-size:10px;color:#94a3b8;margin-bottom:8px">แสดงสถานะย่อย (Layer 2) — กดที่กราฟหรือ legend เพื่อกรอง</div>
+      <div class="edonut-row"><div class="chart-wrap"><canvas id="echart-donut-detail"></canvas></div><div id="echart-donut-detail-leg" class="edonut-side"></div></div>
+    </div>
+  </div>
   ${d.some(x=>x.start)?`<div class="card">
     <div class="shtitle" style="margin-bottom:6px">📈 Cumulative Pipeline Growth</div>
     <div style="font-size:10px;color:#94a3b8;margin-bottom:10px">รวมยอด kWp ของโครงการตามลำดับ Start Date</div>
