@@ -515,10 +515,10 @@ body.pv-exec .pv-exec-badge{display:inline-flex;align-items:center;gap:5px;backg
       </div>
       <div style="font-size:12px;color:#64748b;margin:8px 0 14px">
         ระบบเทียบข้อมูลแต่ละรอบที่ sync เพื่อบอกว่า <b>โครงการไหน · คอลัมน์ไหน · เปลี่ยนจากอะไร→เป็นอะไร</b>.
-        ส่วนช่อง <b>“ใครแก้”</b> จะแสดงเมื่อติดตั้ง Apps Script ในชีตแล้ว (ดูวิธีในไฟล์ <code>apps-script/PV-ChangeLog.gs</code>).
+        ส่วนช่อง <b>“Edited by”</b> จะแสดงชื่อ/อีเมลผู้แก้เมื่อติดตั้ง Apps Script ในชีตแล้ว (ดูวิธีในไฟล์ <code>apps-script/PV-ChangeLog.gs</code>) — แถวที่ระบบตรวจจับเองจาก sync จะไม่มีชื่อผู้แก้.
       </div>
       <div class="ov"><table>
-        <thead><tr><th style="width:140px">เวลา</th><th>โครงการ</th><th>คอลัมน์</th><th>เปลี่ยนแปลง</th><th style="width:180px">ใครแก้</th></tr></thead>
+        <thead><tr><th style="width:140px">เวลา</th><th>โครงการ</th><th>คอลัมน์</th><th>เปลี่ยนแปลง</th><th style="width:180px">Edited by</th></tr></thead>
         <tbody id="activity-list"></tbody>
       </table></div>
     </div>
@@ -3911,6 +3911,16 @@ function _fmtWhen(ts){
   try{ var d=new Date(ts); return d.toLocaleDateString("th-TH",{day:"2-digit",month:"short"})+" "+d.toLocaleTimeString("th-TH",{hour:"2-digit",minute:"2-digit"}); }
   catch(e){ return ""; }
 }
+// Resolve a readable project name; audit rows often carry only a row number.
+function _clProjName(e){
+  var p=(e.project==null?"":String(e.project)).trim();
+  if(p && !/^#?\d+$/.test(p)) return p;                 // already a real name
+  if(e.no!=null && typeof ALL!=="undefined" && Array.isArray(ALL)){
+    var hit=ALL.find(function(r){return r&&String(r.no)===String(e.no);});
+    if(hit && hit.name) return hit.name;
+  }
+  return p;
+}
 function renderActivity(){
   ensureClLoaded();
   var el=document.getElementById("activity-list"); if(!el){ updateActivityBadge(); return; }
@@ -3927,7 +3937,7 @@ function renderActivity(){
       : '<span style="color:#94a3b8">—</span>';
     return '<tr>'
       +'<td style="white-space:nowrap;color:#64748b;font-size:12px">'+_fmtWhen(e.ts)+'</td>'
-      +'<td style="font-weight:700">'+_clEsc(e.project||"")+(e.no?' <span style="color:#cbd5e1;font-weight:400">#'+_clEsc(e.no)+'</span>':'')+'</td>'
+      +'<td style="font-weight:700">'+_clEsc(_clProjName(e))+(e.no?' <span style="color:#cbd5e1;font-weight:400">#'+_clEsc(e.no)+'</span>':'')+'</td>'
       +'<td><span style="background:#f1f5f9;border-radius:12px;padding:2px 9px;font-size:12px;color:#475569">'+_clEsc(e.field||"")+'</span></td>'
       +'<td style="font-size:13px">'+change+'</td>'
       +'<td>'+who+'</td>'
