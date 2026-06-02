@@ -380,6 +380,15 @@ body.pv-exec .pv-exec-badge{display:inline-flex;align-items:center;gap:5px;backg
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
           <span id="export-go-label">⬇ Download .HTML</span>
         </button>
+
+        <!-- Step 4: Publish online (separate project, never touches the main dashboard) -->
+        <div id="deploy-wrap" style="margin-top:10px;border-top:1px dashed #e2e8f0;padding-top:12px">
+          <button id="deploy-go-btn" onclick="deployExport()" style="width:100%;padding:12px;background:linear-gradient(135deg,#0ea5e9,#22c55e);border:none;border-radius:11px;color:#fff;font-size:14px;font-weight:800;cursor:pointer;font-family:inherit;display:flex;align-items:center;justify-content:center;gap:8px">
+            <span id="deploy-go-label">☁️ Deploy & รับลิงก์แชร์</span>
+          </button>
+          <div style="font-size:10px;color:#94a3b8;text-align:center;margin-top:6px;line-height:1.5">สร้างลิงก์ออนไลน์ (โปรเจกต์แยก ไม่ทับ dashboard หลัก) · ทับลิงก์เดิมทุกครั้ง · กด Copy ส่งผู้บริหารผ่าน LINE ได้ทันที</div>
+          <div id="deploy-result" style="display:none;margin-top:12px;border-radius:10px;padding:12px"></div>
+        </div>
       </div>
     </div>
   </div>
@@ -2201,6 +2210,9 @@ function setExFmt(f){
   const lblMap={html:"⬇ Download .HTML",pdf:"🖨️ Print/Save PDF",png:"⬇ Download .PNG",jpg:"⬇ Download .JPG"};
   const gl=document.getElementById("export-go-label");
   if(gl) gl.textContent=lblMap[f]||"⬇ Export";
+  // Deploy & share-link only makes sense for the interactive HTML report
+  const dw=document.getElementById("deploy-wrap");
+  if(dw) dw.style.display=f==="html"?"block":"none";
   updateExBtn();
 }
 function setHtmlMode(m){
@@ -3161,6 +3173,59 @@ function doExport(){
     }
   };
   setTimeout(run,200);
+}
+
+// ── Deploy the exported report online (separate Vercel project) ──────────────
+async function deployExport(){
+  let sel=Object.entries(EX_SECS).filter(([,v])=>v).map(([k])=>k);
+  if(!sel.length){alert("กรุณาเลือกอย่างน้อย 1 หน้า");return;}
+  // Same Gantt guard as doExport: skip if there's no timeline data
+  const hasTimeline=FILTERED.some(x=>x.start&&x.end);
+  if(sel.includes("gantt")&&!hasTimeline) sel=sel.filter(s=>s!=="gantt");
+  if(!sel.length) sel=["overview"];
+
+  const nm={overview:"Overview",gantt:"Gantt",alerts:"Alerts"};
+  const html=buildExportedHTML(sel,"PV Executive Report — "+sel.map(s=>nm[s]).join(" + "));
+
+  const btn=document.getElementById("deploy-go-btn");
+  const lbl=document.getElementById("deploy-go-label");
+  const box=document.getElementById("deploy-result");
+  btn.disabled=true; btn.style.opacity=.7; lbl.textContent="⏳ กำลัง Deploy…";
+  box.style.display="none";
+
+  try{
+    const r=await fetch("/api/deploy",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({html,sections:sel})});
+    const j=await r.json().catch(()=>({}));
+    if(!r.ok) throw new Error(j.error||("Deploy ไม่สำเร็จ (HTTP "+r.status+")"));
+    const url=j.url;
+    box.style.display="block";
+    box.style.background="#f0f9ff"; box.style.border="1px solid #bae6fd";
+    box.innerHTML=
+      '<div style="font-weight:800;font-size:12px;color:#0369a1;margin-bottom:7px">✅ Deploy สำเร็จ — ลิงก์พร้อมแชร์ (คัดลอกให้แล้ว)</div>'+
+      '<div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap">'+
+        '<input id="deploy-url-inp" readonly value="'+escapeHtml(url)+'" onclick="this.select()" style="flex:1;min-width:170px;border:1px solid #bae6fd;border-radius:7px;padding:7px 9px;font-size:12px;font-family:inherit;color:#0c4a6e;background:#fff">'+
+        '<button onclick="copyDeployUrl(this)" style="border:none;border-radius:7px;padding:7px 13px;background:#0ea5e9;color:#fff;font-weight:700;font-size:12px;cursor:pointer;font-family:inherit">📋 Copy</button>'+
+        '<a href="'+escapeHtml(url)+'" target="_blank" rel="noopener" style="border-radius:7px;padding:7px 13px;background:#22c55e;color:#fff;font-weight:700;font-size:12px;text-decoration:none">🔗 เปิดดู</a>'+
+      '</div>'+
+      '<div style="font-size:10px;color:#64748b;margin-top:7px;line-height:1.5">อัปเดตทับลิงก์เดิมทุกครั้งที่ Deploy · ใช้ข้อมูลตามตัวกรองปัจจุบัน ('+FILTERED.length+' โครงการ)</div>';
+    try{ await navigator.clipboard.writeText(url); }catch(_){}
+  }catch(e){
+    box.style.display="block";
+    box.style.background="#fef2f2"; box.style.border="1px solid #fecaca";
+    box.innerHTML=
+      '<div style="font-weight:800;font-size:12px;color:#b91c1c;margin-bottom:5px">❌ Deploy ไม่สำเร็จ</div>'+
+      '<div style="font-size:11px;color:#7f1d1d;line-height:1.7">'+escapeHtml(e.message)+
+      '<br><br>ตรวจสอบ:<br>• ต้องเปิดผ่านเว็บที่รันบน <b>Vercel</b> (ไม่ใช่เปิดไฟล์ในเครื่อง/Drive)<br>• ตั้งค่า <b>VERCEL_DEPLOY_TOKEN</b> ใน Environment Variables ของโปรเจกต์แล้ว (ดู DEPLOY-SETUP.md)</div>';
+  }finally{
+    btn.disabled=false; btn.style.opacity=1; lbl.textContent="☁️ Deploy & รับลิงก์แชร์";
+  }
+}
+function copyDeployUrl(btn){
+  const inp=document.getElementById("deploy-url-inp"); if(!inp) return;
+  inp.select(); inp.setSelectionRange(0,99999);
+  const done=()=>{ if(btn){ const t=btn.textContent; btn.textContent="✓ Copied"; setTimeout(()=>btn.textContent=t,1500); } };
+  if(navigator.clipboard&&navigator.clipboard.writeText){ navigator.clipboard.writeText(inp.value).then(done).catch(()=>{try{document.execCommand("copy");done();}catch(_){}}); }
+  else { try{document.execCommand("copy");done();}catch(_){} }
 }
 // ── END EXPORT ENGINE ─────────────────────────────────────
 document.addEventListener("DOMContentLoaded",()=>{
