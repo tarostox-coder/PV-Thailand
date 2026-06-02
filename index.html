@@ -3793,6 +3793,16 @@ var TRACK_FIELDS = [
 
 function _clEsc(s){ return (typeof escapeHtml==="function")?escapeHtml(String(s==null?"":s)):String(s==null?"":s); }
 function _valStr(v){ if(v==null) return ""; var s=String(v).trim(); return (s==="-"||s==="—")?"":s; }
+// Treat values as equal if identical, or numerically equal after ignoring sub-0.01
+// churn (e.g. 15.73 vs 15.72827905, 5.34 vs 5.3375 that flip between syncs).
+function _valEq(a,b){
+  var sa=_valStr(a), sb=_valStr(b);
+  if(sa===sb) return true;
+  if(sa==="" || sb==="") return false;
+  var na=Number(sa.replace(/,/g,"")), nb=Number(sb.replace(/,/g,""));
+  if(isFinite(na) && isFinite(nb)) return Math.round(na*100)===Math.round(nb*100);
+  return false;
+}
 function _fieldLabel(k){
   if(k.indexOf("x:")===0) return k.slice(2);
   var f=TRACK_FIELDS.find(function(x){return x[0]===k;}); return f?f[1]:k;
@@ -3807,6 +3817,8 @@ function ensureClLoaded(){
   try{
     var raw=localStorage.getItem("pv_changelog");
     if(raw){ var o=JSON.parse(raw)||{}; CHANGELOG=o.log||[]; PV_PREV_ROWS=o.prev||null; AUDIT_SEEN=o.seen||{}; ACT_SEEN_TS=o.seenTs||0; }
+    // One-time cleanup: drop previously-logged numeric churn (sub-0.01 flip-flops)
+    if(CHANGELOG.length) CHANGELOG=CHANGELOG.filter(function(e){ return !(e.src==="diff" && _valEq(e.from,e.to)); });
   }catch(e){ console.warn("changelog load:",e); }
 }
 function saveChangelogStore(){
@@ -3829,7 +3841,7 @@ function recordDataDiff(newRows){
         if(!prev){ entries.push({ts:now,no:no,project:nm,field:"➕ เพิ่มโครงการ",from:"",to:"",who:"",src:"diff"}); return; }
         Object.keys(cur).forEach(function(k){
           var ov=_valStr(prev[k]), nv=_valStr(cur[k]);
-          if(ov!==nv) entries.push({ts:now,no:no,project:nm,field:_fieldLabel(k),from:ov,to:nv,who:"",src:"diff"});
+          if(ov!==nv && !_valEq(prev[k],cur[k])) entries.push({ts:now,no:no,project:nm,field:_fieldLabel(k),from:ov,to:nv,who:"",src:"diff"});
         });
       });
       Object.keys(PV_PREV_ROWS).forEach(function(no){
@@ -3900,7 +3912,7 @@ function dedupAuditVsDiff(){
   CHANGELOG=CHANGELOG.filter(function(e){
     if(e.src!=="diff") return true;
     var dup=audits.some(function(a){
-      return String(a.project||"")===String(e.project||"") && _valStr(a.to)===_valStr(e.to) && Math.abs(a.ts-e.ts)<20*60000;
+      return String(a.project||"")===String(e.project||"") && _valEq(a.to,e.to) && Math.abs(a.ts-e.ts)<20*60000;
     });
     return !dup;
   });
