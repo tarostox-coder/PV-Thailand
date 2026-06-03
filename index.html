@@ -3207,7 +3207,10 @@ async function deployExport(){
         '<button onclick="copyDeployUrl(this)" style="border:none;border-radius:7px;padding:7px 13px;background:#0ea5e9;color:#fff;font-weight:700;font-size:12px;cursor:pointer;font-family:inherit">📋 Copy</button>'+
         '<a href="'+escapeHtml(url)+'" target="_blank" rel="noopener" style="border-radius:7px;padding:7px 13px;background:#22c55e;color:#fff;font-weight:700;font-size:12px;text-decoration:none">🔗 เปิดดู</a>'+
       '</div>'+
-      '<div style="font-size:10px;color:#64748b;margin-top:7px;line-height:1.5">อัปเดตทับลิงก์เดิมทุกครั้งที่ Deploy · ใช้ข้อมูลตามตัวกรองปัจจุบัน ('+FILTERED.length+' โครงการ)</div>';
+      '<div style="font-size:10px;color:#64748b;margin-top:7px;line-height:1.5">อัปเดตทับลิงก์เดิมทุกครั้งที่ Deploy · ใช้ข้อมูลตามตัวกรองปัจจุบัน ('+FILTERED.length+' โครงการ)</div>'+
+      (j.public===false
+        ? '<div style="margin-top:8px;background:#fffbeb;border:1px solid #fde68a;border-radius:8px;padding:8px 10px;font-size:10px;color:#92400e;line-height:1.6">⚠️ ปิดการล็อกอินอัตโนมัติไม่สำเร็จ ('+escapeHtml(j.protectNote||"")+') — ผู้บริหารอาจต้องล็อกอิน Vercel<br>แก้เอง 1 ครั้ง: Vercel → โปรเจกต์ <b>'+escapeHtml(j.project||"pv-exec-report")+'</b> → <b>Settings → Deployment Protection</b> → ปิด <b>Vercel Authentication</b> → Save</div>'
+        : '<div style="margin-top:6px;font-size:10px;color:#16a34a">🌐 ตั้งเป็นสาธารณะแล้ว — เปิดได้เลยไม่ต้องล็อกอิน</div>');
     try{ await navigator.clipboard.writeText(url); }catch(_){}
   }catch(e){
     box.style.display="block";

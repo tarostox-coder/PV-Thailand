@@ -80,11 +80,33 @@ export default async function handler(req, res) {
 
     const deployUrl = j.url ? "https://" + String(j.url).replace(/^https?:\/\//, "") : alias;
 
+    // Make the report publicly viewable: disable Vercel Authentication / password
+    // protection on the project so executives can open the LINE link without logging in.
+    let isPublic = true, protectNote = null;
+    try {
+      const pid = j.projectId || project;
+      const pr = await fetch(`https://api.vercel.com/v9/projects/${encodeURIComponent(pid)}${q}`, {
+        method: "PATCH",
+        headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
+        body: JSON.stringify({ ssoProtection: null, passwordProtection: null }),
+      });
+      if (!pr.ok) {
+        const pj = await pr.json().catch(() => ({}));
+        isPublic = false;
+        protectNote = (pj && pj.error && pj.error.message) || `HTTP ${pr.status}`;
+      }
+    } catch (e) {
+      isPublic = false;
+      protectNote = e && e.message ? e.message : String(e);
+    }
+
     res.status(200).json({
       url: alias,
       deployUrl,
       project,
       state: j.readyState || j.status || null,
+      public: isPublic,
+      protectNote,
     });
   } catch (e) {
     res.status(502).json({ error: "เชื่อมต่อ Vercel API ไม่สำเร็จ: " + (e && e.message ? e.message : String(e)) });
