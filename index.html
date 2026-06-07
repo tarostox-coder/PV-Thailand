@@ -166,7 +166,7 @@ body.pv-presenting #pv-pres-flag{display:flex}
   .kpi-row{gap:22px;margin-bottom:26px}
   .kpi{padding:26px 30px;border-radius:18px}
   .kpi-lbl{font-size:14px}
-  .kpi-val{font-size:46px!important}
+  /* V29.4: TV size now driven by the fluid clamp() set inline (no !important override) */
   .kpi-sub{font-size:14px}
   .card{padding:30px 34px;border-radius:20px;margin-bottom:26px}
   .card-title{font-size:20px}
@@ -484,6 +484,29 @@ body.pv-exec #pv-filters-btn,body.pv-presenting #pv-filters-btn{display:none}
 /* Tablet / mobile — pull spacing back so it never feels sparse on small screens */
 @media(max-width:1024px){ .body{padding:22px 24px}.card{padding:20px 22px;margin-bottom:18px} }
 @media(max-width:640px){ .body{padding:16px 14px}.kpi-row{gap:12px;margin-bottom:18px}.card{padding:18px 18px} }
+
+/* ════════════════════════════════════════════════════════════════════════════
+   V29.4 — Typography QA & KPI overflow stabilization (UI-only · additive)
+   Goal: no KPI value may overflow / clip / touch edges, at any breakpoint.
+   Value font-size is fluid clamp() (set inline by length-tier); these rules are
+   the safety net so even an unexpected string wraps gracefully instead of
+   clipping. No redesign — refinement only.
+   ════════════════════════════════════════════════════════════════════════════ */
+/* KPI value — fluid, self-contained, last-resort wrap (never clip) */
+.kpi-val,.kpi .kval{line-height:1.12;max-width:100%;overflow-wrap:anywhere;word-break:normal}
+/* keep the value clear of the card edge */
+.kpi{padding-right:22px}
+/* Executive metric + header tile values — make fluid too (currency-safe) */
+.pv-em-v{font-size:clamp(20px,1.7vw,30px);overflow-wrap:anywhere}
+.pv-htile-v{font-size:clamp(18px,1.4vw,24px);overflow-wrap:anywhere}
+.pv-sk-v{overflow-wrap:anywhere}
+/* Labels / subtitles — wrap, never truncate */
+.kpi-lbl,.kpi-sub,.pv-em-l,.pv-em-s,.pv-htile-h,.pv-htile-s{overflow-wrap:anywhere}
+.kpi-lbl{line-height:1.3}
+/* Wider audit: titles / table cells wrap instead of forcing overflow */
+.card-title{overflow-wrap:anywhere}
+td,th{overflow-wrap:anywhere}
+@media(min-width:1921px){ .pv-em-v{font-size:clamp(28px,1.6vw,40px)} }
 </style>
 </head>
 <body>
@@ -1414,7 +1437,7 @@ function renderKPI(st){
     const click=(k.f!=null)?`onclick="kpiFilter('${k.f}')"`:(k.scroll?`onclick="kpiScrollTo('${k.scroll}')"`:"");
     const clk=(k.f!=null||k.scroll)?" kpi-click":"";
     const tip=(k.f!=null)?(k.f==="All"?"กดเพื่อแสดงทุกโครงการ":"กดเพื่อกรองเฉพาะ "+k.l):(k.scroll?"กดเพื่อไปที่กราฟ":"");
-    return `<div class="kpi${clk}" style="--c:${k.c}" ${click} title="${tip}"><div class="kpi-lbl">${k.l}<span>${k.icon}</span></div><div class="kpi-val" style="font-size:${k.v.length>12?"23px":"34px"}">${k.v}</div><div class="kpi-sub">${k.s}</div></div>`;
+    return `<div class="kpi${clk}" style="--c:${k.c}" ${click} title="${tip}"><div class="kpi-lbl">${k.l}<span>${k.icon}</span></div><div class="kpi-val" style="font-size:${(l=>l<=6?"clamp(26px,2vw,40px)":l<=10?"clamp(20px,1.7vw,30px)":"clamp(17px,1.45vw,26px)")(String(k.v).length)}">${k.v}</div><div class="kpi-sub">${k.s}</div></div>`;
   }).join("");
 }
 
