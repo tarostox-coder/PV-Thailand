@@ -2657,7 +2657,7 @@ function buildExportedHTML(sections, pageTitle){
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"><\/script>
 <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0/dist/chartjs-plugin-datalabels.min.js"><\/script>
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Sarabun:wght@400;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Noto+Sans+Thai:wght@400;500;600;700;800;900&display=swap');
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:'Sarabun','Noto Sans Thai',sans-serif;background:#f0f4f8;min-height:100vh;color:#1e293b;font-size:13px}
 .hdr{background:linear-gradient(135deg,#1e3a8a,#1d4ed8 60%,#0ea5e9);color:#fff;padding:14px 18px 0}
@@ -2726,6 +2726,53 @@ tfoot tr td{background:linear-gradient(90deg,#f0f9ff,#faf5ff)!important;border-t
 @media(max-width:600px){.crow{grid-template-columns:1fr}.kpi{min-width:110px}.kval{font-size:18px}.gl{width:100px}.gst{display:none}.hdr-st{display:none}.chart-wrap{height:200px}}
 /* V28 — presentation-ready print/PDF: prevent card & chart cut-off, drop interactive UI */
 @media print{body{background:#fff;-webkit-print-color-adjust:exact;print-color-adjust:exact}.no-print{display:none!important}.card{page-break-inside:avoid;box-shadow:none;border:1px solid #e2e8f0}.crow{grid-template-columns:1fr 1fr}.chart-wrap{height:300px}.chart-wrap.tall{height:520px}.ov,.gsc{overflow:visible}table{font-size:10px}tr{page-break-inside:avoid}.hdr{-webkit-print-color-adjust:exact;print-color-adjust:exact}@page{size:A4 landscape;margin:9mm}}
+/* ════════════════════════════════════════════════════════════════════════════
+   V29 EXPORT THEME — match the live SaaS dashboard (additive override)
+   Restyles colors/typography/KPI/cards only; chart-wrap heights, grids and
+   gantt geometry are left untouched so Chart.js & layout keep working.
+   ════════════════════════════════════════════════════════════════════════════ */
+body{font-family:'Inter','Noto Sans Thai','Sarabun',system-ui,-apple-system,sans-serif;
+  background:#f5f7fb;color:#0b1220;-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
+.kval{font-variant-numeric:tabular-nums}
+/* Header — deep enterprise gradient (matches live) */
+.hdr{background:radial-gradient(900px 200px at 12% -40%,rgba(14,165,233,.42),transparent 60%),
+  linear-gradient(118deg,#0e1b3a 0%,#16308a 46%,#1d4ed8 100%);padding:14px 20px 12px}
+.hdr h1{font-weight:900;letter-spacing:-0.02em}
+.tabs{background:rgba(255,255,255,.10);border:1px solid rgba(255,255,255,.14);border-radius:13px;padding:4px}
+.tab{border-radius:10px;font-weight:600}
+.tab.active{background:#fff;color:#16308a;box-shadow:0 1px 2px rgba(16,24,40,.12);font-weight:800}
+/* Cards + section titles */
+.card{border:1px solid #e9edf3;border-radius:16px;box-shadow:0 1px 2px rgba(16,24,40,.05),0 1px 3px rgba(16,24,40,.06);padding:18px 20px}
+.shtitle{font-size:13px;font-weight:800;letter-spacing:-0.01em;border-bottom:1px solid #e9edf3;padding-bottom:8px;margin-bottom:12px;color:#0b1220}
+.fbar{border:1px solid #e9edf3;border-radius:14px;box-shadow:0 1px 2px rgba(16,24,40,.05)}
+/* KPI cards — gradient + white text (matches live) */
+.krow{gap:12px}
+.kpi{border:none;border-top:none;border-radius:16px;padding:16px 18px;color:#fff;position:relative;overflow:hidden;
+  background-image:linear-gradient(135deg,
+      color-mix(in srgb,var(--c,#1d4ed8) 100%,#ffffff 14%) 0%,
+      var(--c,#1d4ed8) 52%,
+      color-mix(in srgb,var(--c,#1d4ed8) 100%,#0b1220 24%) 100%);
+  box-shadow:0 8px 20px -12px rgba(16,24,40,.26),0 1px 2px rgba(16,24,40,.06)}
+.kpi::after{content:"";position:absolute;inset:0;pointer-events:none;
+  background:linear-gradient(180deg,rgba(255,255,255,.10),rgba(255,255,255,0) 42%)}
+.kpi>*{position:relative;z-index:1}
+.klbl{color:rgba(255,255,255,.92);letter-spacing:.04em}
+.kval{color:#fff;font-weight:800;letter-spacing:-0.02em;line-height:1.12;
+  text-shadow:0 1px 2px rgba(11,18,32,.28);overflow-wrap:anywhere;max-width:100%}
+.ksub{color:rgba(255,255,255,.82)}
+.kclick:hover{box-shadow:0 16px 34px -14px rgba(16,24,40,.34),0 3px 8px -4px rgba(16,24,40,.14)}
+@supports not (background-image:linear-gradient(135deg,color-mix(in srgb,red,blue),red)){
+  .kpi{background-image:none;background:var(--c,#1d4ed8)}}
+/* Table polish (matches live) */
+th{background:#f8fafc;color:#8a97a8;text-transform:uppercase;font-size:10px;letter-spacing:.04em;
+   border-bottom:1px solid #dfe5ec;padding:9px 10px}
+td{padding:8px 10px;border-bottom:1px solid #eef2f7;overflow-wrap:anywhere}
+tr:nth-child(even) td{background:#f8fafc}
+/* PDF/print: keep gradient KPIs (white text) visible — force color */
+@media print{
+  .kpi{-webkit-print-color-adjust:exact;print-color-adjust:exact;box-shadow:none;page-break-inside:avoid}
+  .tabs{display:none!important}
+}
 </style>
 </head>
 <body>
@@ -3117,7 +3164,7 @@ function renderOv(d){
   const s=gst(d);
   const vDisp=s.hasVal?"฿"+Math.round(s.tval).toLocaleString("th-TH"):"—";
   const km=[{l:"Total Projects",v:s.total,icon:"📋",c:"#64748b",sub:"ทั้งหมด",f:"All"},{l:"Bidding",v:s.inprog,icon:"📘",c:"#3b82f6",sub:"อยู่ระหว่าง Bidding",f:"Bidding"},{l:"Hold",v:s.hold,icon:"🟡",c:"#f59e0b",sub:"ชะลอ",f:"Hold"},{l:"Win",v:s.win,icon:"🏆",c:"#22c55e",sub:fm(s.wkwp,1)+" kWp",f:"Win"},{l:"Lost",v:s.lost,icon:"❌",c:"#ef4444",sub:s.lost+" ปิดงาน",f:"Lost"},{l:"Total Capacity",v:fm(s.tkwp,1)+" kWp",icon:"☀️",c:"#0ea5e9",sub:"Avg "+fm(s.avg,0)+" kWp/proj",scroll:"echart-bar"},{l:"มูลค่ารวม (฿)",v:vDisp,icon:"💰",c:"#8b5cf6",sub:s.hasVal?s.valCount+" โครงการ":"ยังไม่กรอก",scroll:"echart-bar-value"}];
-  const kh=km.map(k=>{const oc=k.f!=null?(k.f==="All"?"clearStatusFilter()":"filterByStatus('"+k.f+"')"):(k.scroll?"escrollTo('"+k.scroll+"')":"");const clk=(k.f!=null||k.scroll)?" kclick":"";return \`<div class="kpi\${clk}" style="--c:\${k.c}" \${oc?\`onclick="\${oc}"\`:""}><div class="klbl">\${k.l}<span>\${k.icon}</span></div><div class="kval" style="font-size:\${String(k.v).length>12?"16px":"20px"}">\${k.v}</div><div class="ksub">\${k.sub}</div></div>\`;}).join("");
+  const kh=km.map(k=>{const oc=k.f!=null?(k.f==="All"?"clearStatusFilter()":"filterByStatus('"+k.f+"')"):(k.scroll?"escrollTo('"+k.scroll+"')":"");const clk=(k.f!=null||k.scroll)?" kclick":"";return \`<div class="kpi\${clk}" style="--c:\${k.c}" \${oc?\`onclick="\${oc}"\`:""}><div class="klbl">\${k.l}<span>\${k.icon}</span></div><div class="kval" style="font-size:\${(l=>l<=6?"clamp(20px,2.2vw,28px)":l<=10?"clamp(16px,1.8vw,22px)":"clamp(13px,1.4vw,18px)")(String(k.v).length)}">\${k.v}</div><div class="ksub">\${k.sub}</div></div>\`;}).join("");
   // Restructured columns: Core has business fields, Start/End/Progress moved to extras (yellow)
   // V24: Added Sub-Status (L2) column right after Status (L1)
   // V28.2: default shows columns through Sub-Status (L2); the rest collapse behind the toggle

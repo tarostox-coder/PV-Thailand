@@ -25,6 +25,13 @@
 - **Tables** — sticky header, zebra บางลง, hover นุ่ม
 - พื้นหลัง `#f5f7fb`, ปรับ whitespace/typography ทุก breakpoint (mobile→TV)
 
+### Export (V29.6)
+- **Exported HTML / PDF ใช้ธีม V29 ตรงกับ live** — `buildExportedHTML()` เดิมมี CSS
+  ของตัวเอง (Sarabun, พื้น #f0f4f8, KPI ขีดบน) → อัปเป็น Inter+Noto, พื้น #f5f7fb,
+  KPI gradient ขาว, การ์ด hairline, ตาราง/headers เข้าชุด
+- KPI value ใน export เป็น fluid `clamp()` กัน overflow + `print-color-adjust:exact`
+  บน `.kpi` เพื่อให้ PDF พิมพ์ gradient + ตัวอักษรขาวได้ (กันขาวบนขาว)
+
 ### Notes
 - คงความหมายสีสถานะ (Bidding/Hold/Win/Lost) ทุกจุด
 - ใบ Hold (ส้ม #f59e0b) ตัวอักษรขาวต้อง darken ปลาย gradient + text-shadow เพื่อ contrast
