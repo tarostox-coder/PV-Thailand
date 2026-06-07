@@ -8,8 +8,11 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0/dist/chartjs-plugin-datalabels.min.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Noto+Sans+Thai:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Sarabun:wght@400;600;700;800&display=swap');
+/* V29: fonts loaded via <link> above (Inter for Latin, Noto Sans Thai for Thai) */
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:'Sarabun','Noto Sans Thai',sans-serif;background:#f0f4f8;min-height:100vh;color:#1e293b;font-size:14px}
 .header{background:linear-gradient(135deg,#1e3a8a 0%,#1d4ed8 60%,#0ea5e9 100%);color:#fff;padding:18px 28px 0}
@@ -247,6 +250,100 @@ body.pv-exec #pv-pres-ctrl{display:none}
 body.pv-exec .extra-tog{display:inline-block}
 .pv-exec-badge{display:none}
 body.pv-exec .pv-exec-badge{display:inline-flex;align-items:center;gap:5px;background:rgba(255,255,255,.2);border:1px solid rgba(255,255,255,.35);border-radius:20px;padding:3px 11px;font-size:11px;font-weight:800;color:#fff}
+
+/* ════════════════════════════════════════════════════════════════════════════
+   V29.0 — EXECUTIVE SaaS UI · Phase 1 (design system · additive · UI-only)
+   Goal: modern enterprise SaaS look & feel. Keeps all IDs/classes/behaviour.
+   Status colors (Bidding/Hold/Win/Lost) unchanged — only neutrals/surfaces/
+   typography/elevation are refined. Inspired by Linear / HubSpot / Monday.
+   ════════════════════════════════════════════════════════════════════════════ */
+:root{
+  --font-sans:'Inter','Noto Sans Thai','Sarabun',system-ui,-apple-system,'Segoe UI',sans-serif;
+  /* surfaces */
+  --bg:#f4f6f9; --surface:#ffffff; --surface-2:#f8fafc; --surface-3:#f1f5f9;
+  /* hairlines */
+  --line:#e9edf3; --line-2:#eef2f7; --line-strong:#dfe5ec;
+  /* ink */
+  --ink:#0b1220; --ink-2:#475569; --ink-3:#8a97a8;
+  /* brand */
+  --brand:#1d4ed8; --brand-2:#0ea5e9; --brand-ink:#16308a;
+  /* radius */
+  --r-sm:10px; --r-md:14px; --r-lg:18px; --r-xl:22px;
+  /* elevation — soft, layered (SaaS) */
+  --shadow-xs:0 1px 2px rgba(16,24,40,.05);
+  --shadow-sm:0 1px 2px rgba(16,24,40,.05),0 1px 3px rgba(16,24,40,.06);
+  --shadow-md:0 4px 14px -4px rgba(16,24,40,.12),0 2px 6px -2px rgba(16,24,40,.06);
+  --shadow-lg:0 18px 44px -10px rgba(16,24,40,.20),0 8px 18px -8px rgba(16,24,40,.10);
+  /* keep legacy tokens in sync so older rules pick up the refined look */
+  --pv-shadow:var(--shadow-sm); --pv-radius:14px;
+}
+body{font-family:var(--font-sans);background:var(--bg);color:var(--ink);
+  -webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;text-rendering:optimizeLegibility}
+#gantt-tooltip{font-family:var(--font-sans)}
+/* tighten tracking only on Latin/numeric display elements (protects Thai readability) */
+.h-title h1,.kpi-val,.pv-em-v,.pv-htile-v,.pv-sk-v{letter-spacing:-0.018em}
+.kpi-val,.pv-em-v,.pv-htile-v,.pv-sk-v,#t-foot td,.kval{font-variant-numeric:tabular-nums}
+:focus-visible{outline:2px solid var(--brand);outline-offset:2px;border-radius:4px}
+
+/* ── Header — refined deep enterprise gradient + crisp separation ── */
+.header{background:
+    radial-gradient(1200px 220px at 12% -40%,rgba(14,165,233,.45),transparent 60%),
+    linear-gradient(118deg,#0e1b3a 0%,#16308a 46%,#1d4ed8 100%);
+  box-shadow:0 1px 0 rgba(255,255,255,.06) inset,0 8px 24px -16px rgba(11,18,32,.5);padding:18px 28px 0}
+.h-title h1{font-weight:900;letter-spacing:-0.02em}
+.h-title p{opacity:.78;font-weight:500}
+.badge{font-weight:700;letter-spacing:.01em;backdrop-filter:blur(4px)}
+
+/* ── Tabs — modern segmented control ── */
+.tabs{background:rgba(255,255,255,.10);border:1px solid rgba(255,255,255,.14);border-radius:14px;padding:5px;gap:3px}
+.tab{border-radius:10px;font-weight:600;letter-spacing:.01em;color:rgba(255,255,255,.82);transition:background .18s,color .18s,box-shadow .18s}
+.tab:hover{background:rgba(255,255,255,.12);color:#fff}
+.tab.active{background:#fff;color:var(--brand-ink);box-shadow:0 1px 2px rgba(16,24,40,.12),0 2px 8px rgba(16,24,40,.10);font-weight:800}
+
+/* ── Header status tiles — refined glass ── */
+.pv-htile{background:rgba(255,255,255,.10);border:1px solid rgba(255,255,255,.18);border-radius:14px;box-shadow:0 1px 0 rgba(255,255,255,.08) inset}
+.pv-htile-h{opacity:.8}
+
+/* ── Cards — clean hairline + soft elevation ── */
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-md);
+  box-shadow:var(--shadow-sm);transition:box-shadow .2s ease,border-color .2s ease}
+#tab-overview .card:hover,.chart-row .card:hover{box-shadow:var(--shadow-md);border-color:var(--line-strong)}
+.card-title{font-weight:800;font-size:14px;letter-spacing:-0.01em;color:var(--ink)}
+
+/* ── KPI + Executive metric cards — left accent bar, refined type ── */
+.kpi{background:var(--surface);border:1px solid var(--line);border-top:1px solid var(--line);border-radius:var(--r-md);
+  box-shadow:inset 3px 0 0 var(--c,var(--brand)),var(--shadow-sm);padding:17px 20px 16px}
+.kpi-lbl{font-size:10.5px;color:var(--ink-3);font-weight:700;letter-spacing:.05em}
+.kpi-val{font-weight:800;color:var(--ink)}
+.kpi-sub{color:var(--ink-3)}
+.kpi-click:hover{transform:translateY(-3px);box-shadow:inset 3px 0 0 var(--c,var(--brand)),var(--shadow-lg)}
+#pv-exec-metrics .pv-em{border-top:1px solid var(--line);border-radius:var(--r-md);
+  box-shadow:inset 3px 0 0 var(--c,var(--brand)),var(--shadow-sm)}
+.pv-em-l{color:var(--ink-3)} .pv-em-v{font-weight:800}
+
+/* ── Filter bar — surface card + focus ring ── */
+.fbar{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-md);box-shadow:var(--shadow-sm)}
+.fbar input,.fbar select{border:1px solid var(--line-strong);border-radius:9px;background:var(--surface-2);transition:border-color .15s,box-shadow .15s,background .15s}
+.fbar input:hover,.fbar select:hover{border-color:#c8d2de}
+.fbar input:focus,.fbar select:focus{border-color:var(--brand);background:#fff;box-shadow:0 0 0 3px rgba(29,78,216,.12)}
+
+/* ── Table — airy, refined header, subtle zebra ── */
+table{font-size:12px}
+th{background:var(--surface-2);color:var(--ink-3);font-weight:700;font-size:10.5px;letter-spacing:.04em;text-transform:uppercase;border-bottom:1px solid var(--line-strong);padding:10px 12px}
+th:hover{background:var(--surface-3)}
+td{padding:9px 12px;border-bottom:1px solid var(--line-2)}
+tr:nth-child(even) td{background:var(--surface-2)}
+tr:hover td{background:#eef4ff!important}
+
+/* ── Inputs/buttons — consistent rounding ── */
+.pg-btn,.btn-clear{border-radius:9px}
+.pg-btn.active{background:var(--brand);border-color:var(--brand)}
+
+/* ── Refined scrollbars (premium detail, webkit) ── */
+*::-webkit-scrollbar{width:10px;height:10px}
+*::-webkit-scrollbar-thumb{background:#cbd5e1;border-radius:8px;border:2px solid transparent;background-clip:content-box}
+*::-webkit-scrollbar-thumb:hover{background:#94a3b8;background-clip:content-box}
+*::-webkit-scrollbar-track{background:transparent}
 </style>
 </head>
 <body>
