@@ -8,8 +8,11 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0/dist/chartjs-plugin-datalabels.min.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Noto+Sans+Thai:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Sarabun:wght@400;600;700;800&display=swap');
+/* V29: fonts loaded via <link> above (Inter for Latin, Noto Sans Thai for Thai) */
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:'Sarabun','Noto Sans Thai',sans-serif;background:#f0f4f8;min-height:100vh;color:#1e293b;font-size:14px}
 .header{background:linear-gradient(135deg,#1e3a8a 0%,#1d4ed8 60%,#0ea5e9 100%);color:#fff;padding:18px 28px 0}
@@ -247,6 +250,240 @@ body.pv-exec #pv-pres-ctrl{display:none}
 body.pv-exec .extra-tog{display:inline-block}
 .pv-exec-badge{display:none}
 body.pv-exec .pv-exec-badge{display:inline-flex;align-items:center;gap:5px;background:rgba(255,255,255,.2);border:1px solid rgba(255,255,255,.35);border-radius:20px;padding:3px 11px;font-size:11px;font-weight:800;color:#fff}
+
+/* ════════════════════════════════════════════════════════════════════════════
+   V29.0 — EXECUTIVE SaaS UI · Phase 1 (design system · additive · UI-only)
+   Goal: modern enterprise SaaS look & feel. Keeps all IDs/classes/behaviour.
+   Status colors (Bidding/Hold/Win/Lost) unchanged — only neutrals/surfaces/
+   typography/elevation are refined. Inspired by Linear / HubSpot / Monday.
+   ════════════════════════════════════════════════════════════════════════════ */
+:root{
+  --font-sans:'Inter','Noto Sans Thai','Sarabun',system-ui,-apple-system,'Segoe UI',sans-serif;
+  /* surfaces */
+  --bg:#f4f6f9; --surface:#ffffff; --surface-2:#f8fafc; --surface-3:#f1f5f9;
+  /* hairlines */
+  --line:#e9edf3; --line-2:#eef2f7; --line-strong:#dfe5ec;
+  /* ink */
+  --ink:#0b1220; --ink-2:#475569; --ink-3:#8a97a8;
+  /* brand */
+  --brand:#1d4ed8; --brand-2:#0ea5e9; --brand-ink:#16308a;
+  /* radius */
+  --r-sm:10px; --r-md:14px; --r-lg:18px; --r-xl:22px;
+  /* elevation — soft, layered (SaaS) */
+  --shadow-xs:0 1px 2px rgba(16,24,40,.05);
+  --shadow-sm:0 1px 2px rgba(16,24,40,.05),0 1px 3px rgba(16,24,40,.06);
+  --shadow-md:0 4px 14px -4px rgba(16,24,40,.12),0 2px 6px -2px rgba(16,24,40,.06);
+  --shadow-lg:0 18px 44px -10px rgba(16,24,40,.20),0 8px 18px -8px rgba(16,24,40,.10);
+  /* keep legacy tokens in sync so older rules pick up the refined look */
+  --pv-shadow:var(--shadow-sm); --pv-radius:14px;
+}
+body{font-family:var(--font-sans);background:var(--bg);color:var(--ink);
+  -webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;text-rendering:optimizeLegibility}
+#gantt-tooltip{font-family:var(--font-sans)}
+/* tighten tracking only on Latin/numeric display elements (protects Thai readability) */
+.h-title h1,.kpi-val,.pv-em-v,.pv-htile-v,.pv-sk-v{letter-spacing:-0.018em}
+.kpi-val,.pv-em-v,.pv-htile-v,.pv-sk-v,#t-foot td,.kval{font-variant-numeric:tabular-nums}
+:focus-visible{outline:2px solid var(--brand);outline-offset:2px;border-radius:4px}
+
+/* ── Header — refined deep enterprise gradient + crisp separation ── */
+.header{background:
+    radial-gradient(1200px 220px at 12% -40%,rgba(14,165,233,.45),transparent 60%),
+    linear-gradient(118deg,#0e1b3a 0%,#16308a 46%,#1d4ed8 100%);
+  box-shadow:0 1px 0 rgba(255,255,255,.06) inset,0 8px 24px -16px rgba(11,18,32,.5);padding:18px 28px 0}
+.h-title h1{font-weight:900;letter-spacing:-0.02em}
+.h-title p{opacity:.78;font-weight:500}
+.badge{font-weight:700;letter-spacing:.01em;backdrop-filter:blur(4px)}
+
+/* ── Tabs — modern segmented control ── */
+.tabs{background:rgba(255,255,255,.10);border:1px solid rgba(255,255,255,.14);border-radius:14px;padding:5px;gap:3px}
+.tab{border-radius:10px;font-weight:600;letter-spacing:.01em;color:rgba(255,255,255,.82);transition:background .18s,color .18s,box-shadow .18s}
+.tab:hover{background:rgba(255,255,255,.12);color:#fff}
+.tab.active{background:#fff;color:var(--brand-ink);box-shadow:0 1px 2px rgba(16,24,40,.12),0 2px 8px rgba(16,24,40,.10);font-weight:800}
+
+/* ── Header status tiles — refined glass ── */
+.pv-htile{background:rgba(255,255,255,.10);border:1px solid rgba(255,255,255,.18);border-radius:14px;box-shadow:0 1px 0 rgba(255,255,255,.08) inset}
+.pv-htile-h{opacity:.8}
+
+/* ── Cards — clean hairline + soft elevation ── */
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-md);
+  box-shadow:var(--shadow-sm);transition:box-shadow .2s ease,border-color .2s ease}
+#tab-overview .card:hover,.chart-row .card:hover{box-shadow:var(--shadow-md);border-color:var(--line-strong)}
+.card-title{font-weight:800;font-size:14px;letter-spacing:-0.01em;color:var(--ink)}
+
+/* ── KPI + Executive metric cards — left accent bar, refined type ── */
+.kpi{background:var(--surface);border:1px solid var(--line);border-top:1px solid var(--line);border-radius:var(--r-md);
+  box-shadow:inset 3px 0 0 var(--c,var(--brand)),var(--shadow-sm);padding:17px 20px 16px}
+.kpi-lbl{font-size:10.5px;color:var(--ink-3);font-weight:700;letter-spacing:.05em}
+.kpi-val{font-weight:800;color:var(--ink)}
+.kpi-sub{color:var(--ink-3)}
+.kpi-click:hover{transform:translateY(-3px);box-shadow:inset 3px 0 0 var(--c,var(--brand)),var(--shadow-lg)}
+#pv-exec-metrics .pv-em{border-top:1px solid var(--line);border-radius:var(--r-md);
+  box-shadow:inset 3px 0 0 var(--c,var(--brand)),var(--shadow-sm)}
+.pv-em-l{color:var(--ink-3)} .pv-em-v{font-weight:800}
+
+/* ── Filter bar — surface card + focus ring ── */
+.fbar{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-md);box-shadow:var(--shadow-sm)}
+.fbar input,.fbar select{border:1px solid var(--line-strong);border-radius:9px;background:var(--surface-2);transition:border-color .15s,box-shadow .15s,background .15s}
+.fbar input:hover,.fbar select:hover{border-color:#c8d2de}
+.fbar input:focus,.fbar select:focus{border-color:var(--brand);background:#fff;box-shadow:0 0 0 3px rgba(29,78,216,.12)}
+
+/* ── Table — airy, refined header, subtle zebra ── */
+table{font-size:12px}
+th{background:var(--surface-2);color:var(--ink-3);font-weight:700;font-size:10.5px;letter-spacing:.04em;text-transform:uppercase;border-bottom:1px solid var(--line-strong);padding:10px 12px}
+th:hover{background:var(--surface-3)}
+td{padding:9px 12px;border-bottom:1px solid var(--line-2)}
+tr:nth-child(even) td{background:var(--surface-2)}
+tr:hover td{background:#eef4ff!important}
+
+/* ── Inputs/buttons — consistent rounding ── */
+.pg-btn,.btn-clear{border-radius:9px}
+.pg-btn.active{background:var(--brand);border-color:var(--brand)}
+
+/* ── Refined scrollbars (premium detail, webkit) ── */
+*::-webkit-scrollbar{width:10px;height:10px}
+*::-webkit-scrollbar-thumb{background:#cbd5e1;border-radius:8px;border:2px solid transparent;background-clip:content-box}
+*::-webkit-scrollbar-thumb:hover{background:#94a3b8;background-clip:content-box}
+*::-webkit-scrollbar-track{background:transparent}
+
+/* ════════════════════════════════════════════════════════════════════════════
+   V29.1 — PHASE 5 · Modern CRM/SaaS redesign (UI-only · additive)
+   Reference: Coupler.io / HubSpot / Salesforce executive dashboards.
+   Headline: gradient KPI cards (white text), softer canvas, larger radii &
+   spacing, sticky table headers. Status semantics preserved via var(--c).
+   ════════════════════════════════════════════════════════════════════════════ */
+:root{
+  --bg:#f5f7fb;            /* soft executive canvas */
+  --r-md:18px; --r-lg:22px;
+  --shadow-card:0 1px 2px rgba(16,24,40,.04),0 8px 24px -12px rgba(16,24,40,.14);
+  --shadow-kpi:0 10px 24px -12px rgba(16,24,40,.30),0 2px 6px -2px rgba(16,24,40,.10);
+}
+.body{padding:24px 30px}
+
+/* ── A. Cards — larger radius, airier ── */
+.card{border-radius:18px;padding:22px 24px;box-shadow:var(--shadow-card)}
+.fbar{border-radius:18px}
+
+/* ── B. KPI cards — gradient background + white text (signature CRM look) ── */
+.kpi-row{gap:16px;margin-bottom:20px}
+.kpi{
+  border:none;border-radius:18px;padding:20px 22px;color:#fff;
+  background-image:linear-gradient(140deg,
+      color-mix(in srgb,var(--c,#1d4ed8) 100%,#ffffff 12%) 0%,
+      var(--c,#1d4ed8) 44%,
+      color-mix(in srgb,var(--c,#1d4ed8) 100%,#0b1220 34%) 100%);
+  box-shadow:var(--shadow-kpi);
+  transition:transform .16s ease,box-shadow .16s ease;
+}
+/* force readable white on every KPI variant (kpi-lbl/val/sub and exec klbl/kval/ksub) */
+.kpi .kpi-lbl,.kpi .klbl{color:rgba(255,255,255,.92);font-weight:700}
+.kpi .kpi-lbl span,.kpi .klbl span{opacity:.95}
+.kpi .kpi-val,.kpi .kval{color:#fff;font-weight:800;text-shadow:0 1px 2px rgba(11,18,32,.28);letter-spacing:-0.02em}
+.kpi .kpi-sub,.kpi .ksub{color:rgba(255,255,255,.82)}
+.kpi-click{cursor:pointer}
+.kpi-click:hover{transform:translateY(-4px);box-shadow:0 18px 40px -12px rgba(16,24,40,.42),0 4px 10px -4px rgba(16,24,40,.18)}
+.kpi-click:active{transform:translateY(-1px)}
+/* fallback for browsers without color-mix(): plain status color still readable */
+@supports not (background-image:linear-gradient(140deg,color-mix(in srgb,red,blue),red)){
+  .kpi{background-image:none;background:var(--c,#1d4ed8)}
+}
+
+/* ── F. Tables — sticky header that survives long lists ── */
+.ov{position:relative}
+th{position:sticky;top:0;z-index:3;background:var(--surface-2);
+   box-shadow:inset 0 -1px 0 var(--line-strong)}
+
+/* ── G. Executive / presentation: keep gradient KPIs bold on big screens ── */
+@media(min-width:1921px){ .kpi{padding:26px 30px;border-radius:22px} }
+body.pv-presenting .kpi{padding:24px 26px}
+
+/* ── Responsive spacing (tablet / mobile) ── */
+@media(max-width:1024px){ .body{padding:20px 22px} }
+@media(max-width:640px){ .body{padding:16px 14px}.kpi-row{gap:12px} }
+
+/* ════════════════════════════════════════════════════════════════════════════
+   V29.2 — PHASE 5 · Filter drawer + nav polish (UI-only · additive)
+   "Half-way" option: header kept intact (tiles/badges). The existing filter bar
+   becomes a slide-in right drawer — every input/id/handler is unchanged.
+   ════════════════════════════════════════════════════════════════════════════ */
+/* Slide-in drawer (id+class beats base .fbar) */
+#pv-filter-drawer.fbar{
+  position:fixed;top:0;right:0;z-index:9600;height:100dvh;width:min(360px,92vw);
+  flex-direction:column;align-items:stretch;gap:11px;margin:0;border-radius:0;
+  padding:18px 18px 28px;overflow-y:auto;border:none;border-left:1px solid var(--line);
+  box-shadow:-22px 0 60px -24px rgba(16,24,40,.45);
+  transform:translateX(105%);transition:transform .26s cubic-bezier(.4,0,.2,1);
+}
+#pv-filter-drawer.fbar.pv-open{transform:none}
+#pv-filter-drawer .pv-fd-head{display:flex;align-items:center;justify-content:space-between;
+  font-weight:800;font-size:15px;color:var(--ink);padding-bottom:10px;margin-bottom:2px;border-bottom:1px solid var(--line)}
+#pv-filter-drawer .pv-fd-head small{font-weight:600;font-size:11px;color:var(--ink-3)}
+.pv-fd-x{border:none;background:var(--surface-3);color:var(--ink-2);width:30px;height:30px;
+  border-radius:9px;cursor:pointer;font-size:13px;font-family:inherit;line-height:1;transition:background .15s,color .15s}
+.pv-fd-x:hover{background:#e2e8f0;color:var(--ink)}
+#pv-filter-drawer input,#pv-filter-drawer select{width:100%;min-width:0;font-size:13px;padding:9px 11px}
+#pv-filter-drawer .btn-clear{margin-top:2px;padding:9px 12px;font-size:13px}
+#pv-filter-drawer .fcount{margin-left:0;text-align:left;padding-top:2px}
+#pv-filter-drawer .pv-date-row{display:flex;flex-direction:column;gap:8px;padding:12px;border:1px solid var(--line);border-radius:12px;background:var(--surface-2)}
+#pv-filter-drawer .pv-date-lbl{font-size:11px;font-weight:800;color:var(--ink-2);letter-spacing:.02em}
+#pv-filter-drawer .pv-date-inputs{display:flex;align-items:center;gap:7px}
+#pv-filter-drawer .pv-date-inputs input{flex:1;min-width:0}
+#pv-filter-drawer .pv-date-quick{display:flex;gap:6px}
+#pv-filter-drawer .pv-date-quick .pg-btn{flex:1}
+#pv-filter-back{position:fixed;inset:0;background:rgba(15,23,42,.42);backdrop-filter:blur(2px);
+  z-index:9550;opacity:0;visibility:hidden;transition:opacity .24s}
+#pv-filter-back.on{opacity:1;visibility:visible}
+@media(max-width:640px){#pv-filter-drawer.fbar{width:100vw}}
+/* Filters header button — active state + count badge */
+#pv-filters-btn.pv-has-filter{background:rgba(255,255,255,.30)!important;border-color:rgba(255,255,255,.7)!important}
+.pv-fbtn-badge{align-items:center;justify-content:center;min-width:17px;height:17px;padding:0 5px;
+  border-radius:9px;background:#fff;color:var(--brand-ink);font-size:10px;font-weight:900;line-height:1}
+/* Hide Filters button where the filter bar itself is hidden */
+body.pv-exec #pv-filters-btn,body.pv-presenting #pv-filters-btn{display:none}
+
+/* Nav polish — a touch more separation under the tabs row */
+.tabs{margin-top:2px}
+.header{padding-bottom:16px}
+
+/* ════════════════════════════════════════════════════════════════════════════
+   V29.3 — PHASE O · Visual polish & QA vs Salesforce/Coupler reference
+   (UI-only · additive). Softer "subtle" KPI gradients, more whitespace,
+   sharper type hierarchy, roomier chart cards. No logic/KPI/data changes.
+   ════════════════════════════════════════════════════════════════════════════ */
+/* Whitespace system — roomier sections */
+.body{padding:26px 34px}
+.kpi-row{gap:16px;margin-bottom:24px}
+.chart-row{gap:20px;margin-bottom:22px}
+.card{margin-bottom:22px;padding:24px 26px}
+
+/* KPI cards — SUBTLE gradient (gentler bottom), more breathing room, bigger value */
+.kpi{
+  padding:22px 24px;
+  background-image:linear-gradient(135deg,
+      color-mix(in srgb,var(--c,#1d4ed8) 100%,#ffffff 14%) 0%,
+      var(--c,#1d4ed8) 52%,
+      color-mix(in srgb,var(--c,#1d4ed8) 100%,#0b1220 24%) 100%);
+}
+.kpi .kpi-lbl,.kpi .klbl{letter-spacing:.04em;margin-bottom:8px;opacity:.96}
+.kpi .kpi-sub,.kpi .ksub{margin-top:8px}
+/* gentle top sheen for that premium SaaS finish */
+.kpi::after{content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;
+  background:linear-gradient(180deg,rgba(255,255,255,.10),rgba(255,255,255,0) 42%)}
+.kpi{position:relative;overflow:hidden}
+.kpi>*{position:relative;z-index:1}
+
+/* Typography hierarchy */
+.h-title h1{font-size:21px}
+.h-title p{font-size:12px}
+.card-title{font-size:15px;margin-bottom:16px;letter-spacing:-0.012em}
+
+/* Chart cards — keep equal heights, roomy, presentation-ready */
+.chart-row>.card{padding:22px 24px}
+
+/* Executive / TV — scale the extra whitespace up too */
+@media(min-width:1921px){ .body{padding:40px 64px}.kpi-row{margin-bottom:32px}.card{margin-bottom:30px} }
+/* Tablet / mobile — pull spacing back so it never feels sparse on small screens */
+@media(max-width:1024px){ .body{padding:22px 24px}.card{padding:20px 22px;margin-bottom:18px} }
+@media(max-width:640px){ .body{padding:16px 14px}.kpi-row{gap:12px;margin-bottom:18px}.card{padding:18px 18px} }
 </style>
 </head>
 <body>
@@ -265,6 +502,10 @@ body.pv-exec .pv-exec-badge{display:inline-flex;align-items:center;gap:5px;backg
       <button id="refresh-btn" title="ดึงข้อมูลล่าสุดจาก Google Sheet เดี๋ยวนี้ (ข้อมูลเดิมไม่หาย)" onclick="forceRefresh(this)" style="display:flex;align-items:center;gap:6px;background:rgba(255,255,255,.15);border:1.5px solid rgba(255,255,255,.4);border-radius:20px;padding:5px 14px;color:#fff;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;transition:all .2s" onmouseover="this.style.background='rgba(255,255,255,.28)'" onmouseout="this.style.background='rgba(255,255,255,.15)'">
         <svg class="rf-ico" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0114.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0020.49 15"/></svg>
         <span class="rf-label">Refresh</span>
+      </button>
+      <button id="pv-filters-btn" onclick="toggleFilterDrawer()" title="ตัวกรองข้อมูล (Filters)" style="display:flex;align-items:center;gap:6px;background:rgba(255,255,255,.15);border:1.5px solid rgba(255,255,255,.4);border-radius:20px;padding:5px 14px;color:#fff;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;transition:all .2s" onmouseover="this.style.background='rgba(255,255,255,.28)'" onmouseout="this.style.background='rgba(255,255,255,.15)'">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/></svg>
+        Filters<span class="pv-fbtn-badge" style="display:none"></span>
       </button>
       <button onclick="openExportModal()" style="display:flex;align-items:center;gap:6px;background:rgba(255,255,255,.15);border:1.5px solid rgba(255,255,255,.4);border-radius:20px;padding:5px 14px;color:#fff;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;transition:all .2s" onmouseover="this.style.background='rgba(255,255,255,.28)'" onmouseout="this.style.background='rgba(255,255,255,.15)'">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
@@ -410,13 +651,17 @@ body.pv-exec .pv-exec-badge{display:inline-flex;align-items:center;gap:5px;backg
     <span style="color:#64748b;font-weight:600">เลือก Layer 1 ก่อน → Layer 2 จะแสดงตัวเลือกย่อยอัตโนมัติ</span>
   </div>
 
-  <div class="fbar">
-    <span style="font-size:14px">🔍</span>
+  <div class="fbar" id="pv-filter-drawer">
+    <div class="pv-fd-head">
+      <span>🔍 ตัวกรองข้อมูล <small>Filters</small></span>
+      <button type="button" class="pv-fd-x" onclick="toggleFilterDrawer(false)" aria-label="ปิดตัวกรอง">✕</button>
+    </div>
     <input type="text" id="search" placeholder="ค้นหาโครงการ…" oninput="applyFilters()">
     <div id="dyn-filters" style="display:contents"></div>
     <button class="btn-clear" onclick="clearFilters()">✕ Clear</button>
     <span class="fcount" id="fcount"></span>
   </div>
+  <div id="pv-filter-back" onclick="toggleFilterDrawer(false)"></div>
 
   <!-- OVERVIEW -->
   <div id="tab-overview">
@@ -1169,7 +1414,7 @@ function renderKPI(st){
     const click=(k.f!=null)?`onclick="kpiFilter('${k.f}')"`:(k.scroll?`onclick="kpiScrollTo('${k.scroll}')"`:"");
     const clk=(k.f!=null||k.scroll)?" kpi-click":"";
     const tip=(k.f!=null)?(k.f==="All"?"กดเพื่อแสดงทุกโครงการ":"กดเพื่อกรองเฉพาะ "+k.l):(k.scroll?"กดเพื่อไปที่กราฟ":"");
-    return `<div class="kpi${clk}" style="--c:${k.c}" ${click} title="${tip}"><div class="kpi-lbl">${k.l}<span>${k.icon}</span></div><div class="kpi-val" style="font-size:${k.v.length>12?"20px":"28px"}">${k.v}</div><div class="kpi-sub">${k.s}</div></div>`;
+    return `<div class="kpi${clk}" style="--c:${k.c}" ${click} title="${tip}"><div class="kpi-lbl">${k.l}<span>${k.icon}</span></div><div class="kpi-val" style="font-size:${k.v.length>12?"23px":"34px"}">${k.v}</div><div class="kpi-sub">${k.s}</div></div>`;
   }).join("");
 }
 
@@ -1663,13 +1908,19 @@ function buildFilters(){
 
   // Append Date Range inputs (Start Date / End Date filter)
   const dateBox=`
-    <span style="font-size:11px;color:#64748b;font-weight:600;margin-left:6px">📅</span>
-    <input type="date" id="f_date_from" onchange="applyFilters()" title="Start Date (จากวันที่)" style="border:1px solid #e2e8f0;border-radius:8px;padding:5px 8px;font-size:11px;font-family:inherit;color:#334155;background:#fff;min-width:auto">
-    <span style="font-size:11px;color:#94a3b8">→</span>
-    <input type="date" id="f_date_to" onchange="applyFilters()" title="End Date (ถึงวันที่)" style="border:1px solid #e2e8f0;border-radius:8px;padding:5px 8px;font-size:11px;font-family:inherit;color:#334155;background:#fff;min-width:auto">
-    <button onclick="setDateRange('week')" class="pg-btn" style="padding:4px 9px;font-size:11px" title="สัปดาห์นี้">7 วัน</button>
-    <button onclick="setDateRange('month')" class="pg-btn" style="padding:4px 9px;font-size:11px" title="เดือนนี้">30 วัน</button>
-    <button onclick="setDateRange('quarter')" class="pg-btn" style="padding:4px 9px;font-size:11px" title="3 เดือน">90 วัน</button>
+    <div class="pv-date-row">
+      <span class="pv-date-lbl">📅 ช่วงวันที่</span>
+      <div class="pv-date-inputs">
+        <input type="date" id="f_date_from" onchange="applyFilters()" title="Start Date (จากวันที่)" style="border:1px solid #e2e8f0;border-radius:8px;padding:5px 8px;font-size:11px;font-family:inherit;color:#334155;background:#fff;min-width:auto">
+        <span style="font-size:11px;color:#94a3b8">→</span>
+        <input type="date" id="f_date_to" onchange="applyFilters()" title="End Date (ถึงวันที่)" style="border:1px solid #e2e8f0;border-radius:8px;padding:5px 8px;font-size:11px;font-family:inherit;color:#334155;background:#fff;min-width:auto">
+      </div>
+      <div class="pv-date-quick">
+        <button onclick="setDateRange('week')" class="pg-btn" style="padding:4px 9px;font-size:11px" title="สัปดาห์นี้">7 วัน</button>
+        <button onclick="setDateRange('month')" class="pg-btn" style="padding:4px 9px;font-size:11px" title="เดือนนี้">30 วัน</button>
+        <button onclick="setDateRange('quarter')" class="pg-btn" style="padding:4px 9px;font-size:11px" title="3 เดือน">90 วัน</button>
+      </div>
+    </div>
   `;
   document.getElementById("dyn-filters").insertAdjacentHTML("beforeend",dateBox);
 }
@@ -1754,6 +2005,7 @@ function applyFilters(){
   CUR_PAGE=1;
   document.getElementById("fcount").textContent=`${FILTERED.length} / ${ALL.length} โครงการ`;
   renderAll(FILTERED);
+  updateFilterBtn();
 }
 
 function clearFilters(){
@@ -1763,6 +2015,30 @@ function clearFilters(){
   const dt=document.getElementById("f_date_to"); if(dt) dt.value="";
   buildFilters();  // rebuild to reset Layer 2 dropdown options
   applyFilters();
+}
+
+// ── V29.2 (Phase 5): Filter drawer — slide-in panel; keeps all filter inputs/logic ──
+function toggleFilterDrawer(open){
+  const d=document.getElementById("pv-filter-drawer");
+  const bk=document.getElementById("pv-filter-back");
+  if(!d) return;
+  const show=(open===undefined)?!d.classList.contains("pv-open"):!!open;
+  d.classList.toggle("pv-open",show);
+  if(bk) bk.classList.toggle("on",show);
+  document.body.classList.toggle("pv-drawer-open",show);
+}
+// UI-only indicator: how many filters are active (so the hidden drawer is discoverable)
+function updateFilterBtn(){
+  let n=0;
+  const s=document.getElementById("search"); if(s&&s.value.trim()) n++;
+  const fd=(typeof FILT_DEF!=="undefined")?FILT_DEF:[];
+  fd.forEach(f=>{const el=document.getElementById("f_"+f.k); if(el&&el.value&&el.value!=="All") n++;});
+  const df=document.getElementById("f_date_from"), dt=document.getElementById("f_date_to");
+  if(df&&df.value) n++; if(dt&&dt.value) n++;
+  const b=document.getElementById("pv-filters-btn"); if(!b) return;
+  b.classList.toggle("pv-has-filter",n>0);
+  const badge=b.querySelector(".pv-fbtn-badge");
+  if(badge){ badge.textContent=n; badge.style.display=n?"inline-flex":"none"; }
 }
 
 function renderAll(d){
