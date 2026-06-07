@@ -399,6 +399,50 @@ body.pv-presenting .kpi{padding:24px 26px}
 /* ── Responsive spacing (tablet / mobile) ── */
 @media(max-width:1024px){ .body{padding:20px 22px} }
 @media(max-width:640px){ .body{padding:16px 14px}.kpi-row{gap:12px} }
+
+/* ════════════════════════════════════════════════════════════════════════════
+   V29.2 — PHASE 5 · Filter drawer + nav polish (UI-only · additive)
+   "Half-way" option: header kept intact (tiles/badges). The existing filter bar
+   becomes a slide-in right drawer — every input/id/handler is unchanged.
+   ════════════════════════════════════════════════════════════════════════════ */
+/* Slide-in drawer (id+class beats base .fbar) */
+#pv-filter-drawer.fbar{
+  position:fixed;top:0;right:0;z-index:9600;height:100dvh;width:min(360px,92vw);
+  flex-direction:column;align-items:stretch;gap:11px;margin:0;border-radius:0;
+  padding:18px 18px 28px;overflow-y:auto;border:none;border-left:1px solid var(--line);
+  box-shadow:-22px 0 60px -24px rgba(16,24,40,.45);
+  transform:translateX(105%);transition:transform .26s cubic-bezier(.4,0,.2,1);
+}
+#pv-filter-drawer.fbar.pv-open{transform:none}
+#pv-filter-drawer .pv-fd-head{display:flex;align-items:center;justify-content:space-between;
+  font-weight:800;font-size:15px;color:var(--ink);padding-bottom:10px;margin-bottom:2px;border-bottom:1px solid var(--line)}
+#pv-filter-drawer .pv-fd-head small{font-weight:600;font-size:11px;color:var(--ink-3)}
+.pv-fd-x{border:none;background:var(--surface-3);color:var(--ink-2);width:30px;height:30px;
+  border-radius:9px;cursor:pointer;font-size:13px;font-family:inherit;line-height:1;transition:background .15s,color .15s}
+.pv-fd-x:hover{background:#e2e8f0;color:var(--ink)}
+#pv-filter-drawer input,#pv-filter-drawer select{width:100%;min-width:0;font-size:13px;padding:9px 11px}
+#pv-filter-drawer .btn-clear{margin-top:2px;padding:9px 12px;font-size:13px}
+#pv-filter-drawer .fcount{margin-left:0;text-align:left;padding-top:2px}
+#pv-filter-drawer .pv-date-row{display:flex;flex-direction:column;gap:8px;padding:12px;border:1px solid var(--line);border-radius:12px;background:var(--surface-2)}
+#pv-filter-drawer .pv-date-lbl{font-size:11px;font-weight:800;color:var(--ink-2);letter-spacing:.02em}
+#pv-filter-drawer .pv-date-inputs{display:flex;align-items:center;gap:7px}
+#pv-filter-drawer .pv-date-inputs input{flex:1;min-width:0}
+#pv-filter-drawer .pv-date-quick{display:flex;gap:6px}
+#pv-filter-drawer .pv-date-quick .pg-btn{flex:1}
+#pv-filter-back{position:fixed;inset:0;background:rgba(15,23,42,.42);backdrop-filter:blur(2px);
+  z-index:9550;opacity:0;visibility:hidden;transition:opacity .24s}
+#pv-filter-back.on{opacity:1;visibility:visible}
+@media(max-width:640px){#pv-filter-drawer.fbar{width:100vw}}
+/* Filters header button — active state + count badge */
+#pv-filters-btn.pv-has-filter{background:rgba(255,255,255,.30)!important;border-color:rgba(255,255,255,.7)!important}
+.pv-fbtn-badge{align-items:center;justify-content:center;min-width:17px;height:17px;padding:0 5px;
+  border-radius:9px;background:#fff;color:var(--brand-ink);font-size:10px;font-weight:900;line-height:1}
+/* Hide Filters button where the filter bar itself is hidden */
+body.pv-exec #pv-filters-btn,body.pv-presenting #pv-filters-btn{display:none}
+
+/* Nav polish — a touch more separation under the tabs row */
+.tabs{margin-top:2px}
+.header{padding-bottom:16px}
 </style>
 </head>
 <body>
@@ -417,6 +461,10 @@ body.pv-presenting .kpi{padding:24px 26px}
       <button id="refresh-btn" title="ดึงข้อมูลล่าสุดจาก Google Sheet เดี๋ยวนี้ (ข้อมูลเดิมไม่หาย)" onclick="forceRefresh(this)" style="display:flex;align-items:center;gap:6px;background:rgba(255,255,255,.15);border:1.5px solid rgba(255,255,255,.4);border-radius:20px;padding:5px 14px;color:#fff;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;transition:all .2s" onmouseover="this.style.background='rgba(255,255,255,.28)'" onmouseout="this.style.background='rgba(255,255,255,.15)'">
         <svg class="rf-ico" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0114.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0020.49 15"/></svg>
         <span class="rf-label">Refresh</span>
+      </button>
+      <button id="pv-filters-btn" onclick="toggleFilterDrawer()" title="ตัวกรองข้อมูล (Filters)" style="display:flex;align-items:center;gap:6px;background:rgba(255,255,255,.15);border:1.5px solid rgba(255,255,255,.4);border-radius:20px;padding:5px 14px;color:#fff;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;transition:all .2s" onmouseover="this.style.background='rgba(255,255,255,.28)'" onmouseout="this.style.background='rgba(255,255,255,.15)'">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/></svg>
+        Filters<span class="pv-fbtn-badge" style="display:none"></span>
       </button>
       <button onclick="openExportModal()" style="display:flex;align-items:center;gap:6px;background:rgba(255,255,255,.15);border:1.5px solid rgba(255,255,255,.4);border-radius:20px;padding:5px 14px;color:#fff;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;transition:all .2s" onmouseover="this.style.background='rgba(255,255,255,.28)'" onmouseout="this.style.background='rgba(255,255,255,.15)'">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
@@ -562,13 +610,17 @@ body.pv-presenting .kpi{padding:24px 26px}
     <span style="color:#64748b;font-weight:600">เลือก Layer 1 ก่อน → Layer 2 จะแสดงตัวเลือกย่อยอัตโนมัติ</span>
   </div>
 
-  <div class="fbar">
-    <span style="font-size:14px">🔍</span>
+  <div class="fbar" id="pv-filter-drawer">
+    <div class="pv-fd-head">
+      <span>🔍 ตัวกรองข้อมูล <small>Filters</small></span>
+      <button type="button" class="pv-fd-x" onclick="toggleFilterDrawer(false)" aria-label="ปิดตัวกรอง">✕</button>
+    </div>
     <input type="text" id="search" placeholder="ค้นหาโครงการ…" oninput="applyFilters()">
     <div id="dyn-filters" style="display:contents"></div>
     <button class="btn-clear" onclick="clearFilters()">✕ Clear</button>
     <span class="fcount" id="fcount"></span>
   </div>
+  <div id="pv-filter-back" onclick="toggleFilterDrawer(false)"></div>
 
   <!-- OVERVIEW -->
   <div id="tab-overview">
@@ -1815,13 +1867,19 @@ function buildFilters(){
 
   // Append Date Range inputs (Start Date / End Date filter)
   const dateBox=`
-    <span style="font-size:11px;color:#64748b;font-weight:600;margin-left:6px">📅</span>
-    <input type="date" id="f_date_from" onchange="applyFilters()" title="Start Date (จากวันที่)" style="border:1px solid #e2e8f0;border-radius:8px;padding:5px 8px;font-size:11px;font-family:inherit;color:#334155;background:#fff;min-width:auto">
-    <span style="font-size:11px;color:#94a3b8">→</span>
-    <input type="date" id="f_date_to" onchange="applyFilters()" title="End Date (ถึงวันที่)" style="border:1px solid #e2e8f0;border-radius:8px;padding:5px 8px;font-size:11px;font-family:inherit;color:#334155;background:#fff;min-width:auto">
-    <button onclick="setDateRange('week')" class="pg-btn" style="padding:4px 9px;font-size:11px" title="สัปดาห์นี้">7 วัน</button>
-    <button onclick="setDateRange('month')" class="pg-btn" style="padding:4px 9px;font-size:11px" title="เดือนนี้">30 วัน</button>
-    <button onclick="setDateRange('quarter')" class="pg-btn" style="padding:4px 9px;font-size:11px" title="3 เดือน">90 วัน</button>
+    <div class="pv-date-row">
+      <span class="pv-date-lbl">📅 ช่วงวันที่</span>
+      <div class="pv-date-inputs">
+        <input type="date" id="f_date_from" onchange="applyFilters()" title="Start Date (จากวันที่)" style="border:1px solid #e2e8f0;border-radius:8px;padding:5px 8px;font-size:11px;font-family:inherit;color:#334155;background:#fff;min-width:auto">
+        <span style="font-size:11px;color:#94a3b8">→</span>
+        <input type="date" id="f_date_to" onchange="applyFilters()" title="End Date (ถึงวันที่)" style="border:1px solid #e2e8f0;border-radius:8px;padding:5px 8px;font-size:11px;font-family:inherit;color:#334155;background:#fff;min-width:auto">
+      </div>
+      <div class="pv-date-quick">
+        <button onclick="setDateRange('week')" class="pg-btn" style="padding:4px 9px;font-size:11px" title="สัปดาห์นี้">7 วัน</button>
+        <button onclick="setDateRange('month')" class="pg-btn" style="padding:4px 9px;font-size:11px" title="เดือนนี้">30 วัน</button>
+        <button onclick="setDateRange('quarter')" class="pg-btn" style="padding:4px 9px;font-size:11px" title="3 เดือน">90 วัน</button>
+      </div>
+    </div>
   `;
   document.getElementById("dyn-filters").insertAdjacentHTML("beforeend",dateBox);
 }
@@ -1906,6 +1964,7 @@ function applyFilters(){
   CUR_PAGE=1;
   document.getElementById("fcount").textContent=`${FILTERED.length} / ${ALL.length} โครงการ`;
   renderAll(FILTERED);
+  updateFilterBtn();
 }
 
 function clearFilters(){
@@ -1915,6 +1974,30 @@ function clearFilters(){
   const dt=document.getElementById("f_date_to"); if(dt) dt.value="";
   buildFilters();  // rebuild to reset Layer 2 dropdown options
   applyFilters();
+}
+
+// ── V29.2 (Phase 5): Filter drawer — slide-in panel; keeps all filter inputs/logic ──
+function toggleFilterDrawer(open){
+  const d=document.getElementById("pv-filter-drawer");
+  const bk=document.getElementById("pv-filter-back");
+  if(!d) return;
+  const show=(open===undefined)?!d.classList.contains("pv-open"):!!open;
+  d.classList.toggle("pv-open",show);
+  if(bk) bk.classList.toggle("on",show);
+  document.body.classList.toggle("pv-drawer-open",show);
+}
+// UI-only indicator: how many filters are active (so the hidden drawer is discoverable)
+function updateFilterBtn(){
+  let n=0;
+  const s=document.getElementById("search"); if(s&&s.value.trim()) n++;
+  const fd=(typeof FILT_DEF!=="undefined")?FILT_DEF:[];
+  fd.forEach(f=>{const el=document.getElementById("f_"+f.k); if(el&&el.value&&el.value!=="All") n++;});
+  const df=document.getElementById("f_date_from"), dt=document.getElementById("f_date_to");
+  if(df&&df.value) n++; if(dt&&dt.value) n++;
+  const b=document.getElementById("pv-filters-btn"); if(!b) return;
+  b.classList.toggle("pv-has-filter",n>0);
+  const badge=b.querySelector(".pv-fbtn-badge");
+  if(badge){ badge.textContent=n; badge.style.display=n?"inline-flex":"none"; }
 }
 
 function renderAll(d){
