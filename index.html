@@ -507,6 +507,42 @@ body.pv-exec #pv-filters-btn,body.pv-presenting #pv-filters-btn{display:none}
 .card-title{overflow-wrap:anywhere}
 td,th{overflow-wrap:anywhere}
 @media(min-width:1921px){ .pv-em-v{font-size:clamp(28px,1.6vw,40px)} }
+
+/* ════════════════════════════════════════════════════════════════════════════
+   V29.5 — Visual polish & whitespace pass (UI-only · additive)
+   Header compression (reclaim above-the-fold space) + consistent spacing
+   rhythm + gentle KPI/chart polish. No redesign, no logic changes.
+   ════════════════════════════════════════════════════════════════════════════ */
+/* ── Header compression: ~234px → ~180px (more content above the fold) ── */
+.header{padding:12px 28px 10px}
+.header-top{margin-bottom:8px}
+#pv-head-status{margin-bottom:8px;gap:8px}
+.pv-htile{padding:7px 13px;min-width:0;border-radius:11px}
+.pv-htile-h{font-size:9px;margin-bottom:2px}
+.pv-htile-v{font-size:17px}
+.pv-htile-s{font-size:9px;margin-top:2px;line-height:1.45}
+.tabs{padding:4px}
+.tab{padding:6px 13px}
+/* keep TV/meeting-room header legible (don't over-compress big screens) */
+@media(min-width:1921px){
+  .header{padding:18px 56px 14px}
+  .pv-htile{padding:11px 18px;border-radius:14px}
+  .pv-htile-v{font-size:26px}.pv-htile-h{font-size:12px}.pv-htile-s{font-size:12px}
+  .tab{padding:10px 20px}
+}
+
+/* ── Consistent spacing rhythm (balanced — not cramped, not sparse) ── */
+.body{padding:20px 30px}
+.kpi-row{margin-bottom:20px}
+.chart-row{gap:18px;margin-bottom:20px}
+.card{margin-bottom:20px}
+
+/* ── KPI polish: a touch softer elevation (premium, not flashy) ── */
+.kpi{box-shadow:0 8px 20px -12px rgba(16,24,40,.26),0 1px 2px rgba(16,24,40,.06)}
+.kpi-click:hover{box-shadow:0 16px 34px -14px rgba(16,24,40,.34),0 3px 8px -4px rgba(16,24,40,.14)}
+
+/* ── Chart card polish: tighter title-to-chart rhythm, easier to scan ── */
+.chart-row>.card .card-title{margin-bottom:12px}
 </style>
 </head>
 <body>
