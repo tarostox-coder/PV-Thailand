@@ -443,6 +443,47 @@ body.pv-exec #pv-filters-btn,body.pv-presenting #pv-filters-btn{display:none}
 /* Nav polish — a touch more separation under the tabs row */
 .tabs{margin-top:2px}
 .header{padding-bottom:16px}
+
+/* ════════════════════════════════════════════════════════════════════════════
+   V29.3 — PHASE O · Visual polish & QA vs Salesforce/Coupler reference
+   (UI-only · additive). Softer "subtle" KPI gradients, more whitespace,
+   sharper type hierarchy, roomier chart cards. No logic/KPI/data changes.
+   ════════════════════════════════════════════════════════════════════════════ */
+/* Whitespace system — roomier sections */
+.body{padding:26px 34px}
+.kpi-row{gap:16px;margin-bottom:24px}
+.chart-row{gap:20px;margin-bottom:22px}
+.card{margin-bottom:22px;padding:24px 26px}
+
+/* KPI cards — SUBTLE gradient (gentler bottom), more breathing room, bigger value */
+.kpi{
+  padding:22px 24px;
+  background-image:linear-gradient(135deg,
+      color-mix(in srgb,var(--c,#1d4ed8) 100%,#ffffff 14%) 0%,
+      var(--c,#1d4ed8) 52%,
+      color-mix(in srgb,var(--c,#1d4ed8) 100%,#0b1220 24%) 100%);
+}
+.kpi .kpi-lbl,.kpi .klbl{letter-spacing:.04em;margin-bottom:8px;opacity:.96}
+.kpi .kpi-sub,.kpi .ksub{margin-top:8px}
+/* gentle top sheen for that premium SaaS finish */
+.kpi::after{content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;
+  background:linear-gradient(180deg,rgba(255,255,255,.10),rgba(255,255,255,0) 42%)}
+.kpi{position:relative;overflow:hidden}
+.kpi>*{position:relative;z-index:1}
+
+/* Typography hierarchy */
+.h-title h1{font-size:21px}
+.h-title p{font-size:12px}
+.card-title{font-size:15px;margin-bottom:16px;letter-spacing:-0.012em}
+
+/* Chart cards — keep equal heights, roomy, presentation-ready */
+.chart-row>.card{padding:22px 24px}
+
+/* Executive / TV — scale the extra whitespace up too */
+@media(min-width:1921px){ .body{padding:40px 64px}.kpi-row{margin-bottom:32px}.card{margin-bottom:30px} }
+/* Tablet / mobile — pull spacing back so it never feels sparse on small screens */
+@media(max-width:1024px){ .body{padding:22px 24px}.card{padding:20px 22px;margin-bottom:18px} }
+@media(max-width:640px){ .body{padding:16px 14px}.kpi-row{gap:12px;margin-bottom:18px}.card{padding:18px 18px} }
 </style>
 </head>
 <body>

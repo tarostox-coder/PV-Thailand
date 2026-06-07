@@ -5,6 +5,31 @@
 
 ---
 
+## [V29.0–29.3] — 2026-06 · Modern SaaS UI Redesign (UI-only)
+
+> **Visual redesign เท่านั้น** — ไม่แตะ business logic, KPI calc, filters,
+> Google Sheets sync, charts/export/gantt/exec logic ทั้งสิ้น (additive CSS + markup)
+
+### Added
+- **Design system** — ฟอนต์ `Inter` (อังกฤษ/ตัวเลข) + `Noto Sans Thai` (ไทย) ผ่าน `<link>`,
+  ชุด design token ใน `:root` (surface/hairline/ink/shadow/radius), เงานุ่มแบบ SaaS
+- **Filter drawer** — แถบกรองเดิมกลายเป็น panel สไลด์จากขวา พับเก็บได้
+  (ปุ่ม "Filters" ใน header + badge นับตัวกรองที่ใช้อยู่) — `toggleFilterDrawer()`,
+  `updateFilterBtn()`; ทุก input/id/handler เดิมคงไว้ครบ
+
+### Changed
+- **KPI cards** — พื้น gradient ตามสีสถานะ (ใช้ `var(--c)` + `color-mix()`) ตัวอักษรขาว
+  ตัวเลขใหญ่ขึ้น hover ยกตัว top-sheen เนียน (มี `@supports` fallback ไม่มี color-mix)
+- **Header/nav** — gradient enterprise เข้มขึ้น, tabs เป็น segmented control
+- **Cards/charts** — hairline + เงานุ่ม + มุม 18–22px + padding/ระยะมากขึ้น
+- **Tables** — sticky header, zebra บางลง, hover นุ่ม
+- พื้นหลัง `#f5f7fb`, ปรับ whitespace/typography ทุก breakpoint (mobile→TV)
+
+### Notes
+- คงความหมายสีสถานะ (Bidding/Hold/Win/Lost) ทุกจุด
+- ใบ Hold (ส้ม #f59e0b) ตัวอักษรขาวต้อง darken ปลาย gradient + text-shadow เพื่อ contrast
+  (สีอ่อนสุดในชุด) — ถ้าต้องการ "subtle" เต็มที่ ต้องเปลี่ยนเฉดสถานะ Hold ทั้งระบบ
+
 ## [V28.5] — 2026-06 · Deploy & ChangeLog fixes
 
 ### Added
