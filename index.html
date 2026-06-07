@@ -344,6 +344,61 @@ tr:hover td{background:#eef4ff!important}
 *::-webkit-scrollbar-thumb{background:#cbd5e1;border-radius:8px;border:2px solid transparent;background-clip:content-box}
 *::-webkit-scrollbar-thumb:hover{background:#94a3b8;background-clip:content-box}
 *::-webkit-scrollbar-track{background:transparent}
+
+/* ════════════════════════════════════════════════════════════════════════════
+   V29.1 — PHASE 5 · Modern CRM/SaaS redesign (UI-only · additive)
+   Reference: Coupler.io / HubSpot / Salesforce executive dashboards.
+   Headline: gradient KPI cards (white text), softer canvas, larger radii &
+   spacing, sticky table headers. Status semantics preserved via var(--c).
+   ════════════════════════════════════════════════════════════════════════════ */
+:root{
+  --bg:#f5f7fb;            /* soft executive canvas */
+  --r-md:18px; --r-lg:22px;
+  --shadow-card:0 1px 2px rgba(16,24,40,.04),0 8px 24px -12px rgba(16,24,40,.14);
+  --shadow-kpi:0 10px 24px -12px rgba(16,24,40,.30),0 2px 6px -2px rgba(16,24,40,.10);
+}
+.body{padding:24px 30px}
+
+/* ── A. Cards — larger radius, airier ── */
+.card{border-radius:18px;padding:22px 24px;box-shadow:var(--shadow-card)}
+.fbar{border-radius:18px}
+
+/* ── B. KPI cards — gradient background + white text (signature CRM look) ── */
+.kpi-row{gap:16px;margin-bottom:20px}
+.kpi{
+  border:none;border-radius:18px;padding:20px 22px;color:#fff;
+  background-image:linear-gradient(140deg,
+      color-mix(in srgb,var(--c,#1d4ed8) 100%,#ffffff 12%) 0%,
+      var(--c,#1d4ed8) 44%,
+      color-mix(in srgb,var(--c,#1d4ed8) 100%,#0b1220 34%) 100%);
+  box-shadow:var(--shadow-kpi);
+  transition:transform .16s ease,box-shadow .16s ease;
+}
+/* force readable white on every KPI variant (kpi-lbl/val/sub and exec klbl/kval/ksub) */
+.kpi .kpi-lbl,.kpi .klbl{color:rgba(255,255,255,.92);font-weight:700}
+.kpi .kpi-lbl span,.kpi .klbl span{opacity:.95}
+.kpi .kpi-val,.kpi .kval{color:#fff;font-weight:800;text-shadow:0 1px 2px rgba(11,18,32,.28);letter-spacing:-0.02em}
+.kpi .kpi-sub,.kpi .ksub{color:rgba(255,255,255,.82)}
+.kpi-click{cursor:pointer}
+.kpi-click:hover{transform:translateY(-4px);box-shadow:0 18px 40px -12px rgba(16,24,40,.42),0 4px 10px -4px rgba(16,24,40,.18)}
+.kpi-click:active{transform:translateY(-1px)}
+/* fallback for browsers without color-mix(): plain status color still readable */
+@supports not (background-image:linear-gradient(140deg,color-mix(in srgb,red,blue),red)){
+  .kpi{background-image:none;background:var(--c,#1d4ed8)}
+}
+
+/* ── F. Tables — sticky header that survives long lists ── */
+.ov{position:relative}
+th{position:sticky;top:0;z-index:3;background:var(--surface-2);
+   box-shadow:inset 0 -1px 0 var(--line-strong)}
+
+/* ── G. Executive / presentation: keep gradient KPIs bold on big screens ── */
+@media(min-width:1921px){ .kpi{padding:26px 30px;border-radius:22px} }
+body.pv-presenting .kpi{padding:24px 26px}
+
+/* ── Responsive spacing (tablet / mobile) ── */
+@media(max-width:1024px){ .body{padding:20px 22px} }
+@media(max-width:640px){ .body{padding:16px 14px}.kpi-row{gap:12px} }
 </style>
 </head>
 <body>
@@ -1266,7 +1321,7 @@ function renderKPI(st){
     const click=(k.f!=null)?`onclick="kpiFilter('${k.f}')"`:(k.scroll?`onclick="kpiScrollTo('${k.scroll}')"`:"");
     const clk=(k.f!=null||k.scroll)?" kpi-click":"";
     const tip=(k.f!=null)?(k.f==="All"?"กดเพื่อแสดงทุกโครงการ":"กดเพื่อกรองเฉพาะ "+k.l):(k.scroll?"กดเพื่อไปที่กราฟ":"");
-    return `<div class="kpi${clk}" style="--c:${k.c}" ${click} title="${tip}"><div class="kpi-lbl">${k.l}<span>${k.icon}</span></div><div class="kpi-val" style="font-size:${k.v.length>12?"20px":"28px"}">${k.v}</div><div class="kpi-sub">${k.s}</div></div>`;
+    return `<div class="kpi${clk}" style="--c:${k.c}" ${click} title="${tip}"><div class="kpi-lbl">${k.l}<span>${k.icon}</span></div><div class="kpi-val" style="font-size:${k.v.length>12?"23px":"34px"}">${k.v}</div><div class="kpi-sub">${k.s}</div></div>`;
   }).join("");
 }
 
