@@ -5,6 +5,21 @@
 
 ---
 
+## [V30.5] — 2026-07 · Collapsible sidebar + Project List เป็นหน้าแยก
+
+### Added
+- **Sidebar ย่อ/ขยายได้** — ปุ่มมุมบน sidebar สลับ full ↔ icon-rail (72px) เพื่อเพิ่มพื้นที่เนื้อหา
+  · เก็บสถานะใน localStorage (`pv-side-collapsed`) · มือถือใช้ tabs เหมือนเดิม
+- **แท็บใหม่ "📋 Project List"** — ย้ายตารางโครงการออกจาก Overview ไปเป็นหน้า/แท็บแยกต่างหาก
+  (เพิ่มใน sidebar + header tabs + `showTab()`)
+
+### Changed
+- คลิก KPI สถานะ / `jumpToProject()` → สลับไปหน้า **Project List** แล้ว scroll ให้เห็นผลกรองทันที
+- นำ label ในเมนู sidebar ห่อด้วย `.pv-nav-lbl` (ซ่อนได้ตอนย่อ), เพิ่ม `title` เป็น tooltip ตอนเป็น icon-rail
+
+### Notes
+- ไม่แตะ `renderTable()`/logic ข้อมูล — แค่ย้าย DOM + เพิ่ม tab · id ทั้งหมด (`t-body`/`pagination`/ฯลฯ) คงเดิม
+
 ## [V30.4] — 2026-07 · Hero KPI layout (Total Projects + มูลค่ารวม)
 
 ### Changed
