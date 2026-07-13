@@ -15,9 +15,11 @@
 - **Nav item ที่ active**: เปลี่ยนเป็น pill ขาว ตัวอักษร indigo เข้ม (แบบ ref) + แถบ accent mint→blue
 - Brand tokens (`--brand`/`--brand-2`/`--brand-ink`), ปุ่ม `.pg-btn.active`, `.tab.active` → โทน indigo/blue
 - Footer sidebar: ตัวอักษรเข้มขึ้น (อยู่บนพื้น mint สว่าง) เพื่อคอนทราสต์
+- **โลโก้ Power Vault: ทำพื้นหลัง (สี่เหลี่ยม teal เข้ม) ให้โปร่งใส** → กลืนกับ gradient sidebar
+  แต่ยังเห็นชัด (flood-fill background removal + drop-shadow) เอากรอบ tile ออก
 
 ### Notes
-- โลโก้ Power Vault คงเดิม (ไฟล์ต้นฉบับเดียวกัน) · สีสถานะ KPI (Bidding/Hold/Win/Lost) ไม่แตะ — คงความหมายเดิม
+- สีสถานะ KPI (Bidding/Hold/Win/Lost) ไม่แตะ — คงความหมายเดิม
 
 ## [V30.0] — 2026-07 · Power Vault Sidebar App-Shell + Logo (UI-only)
 
