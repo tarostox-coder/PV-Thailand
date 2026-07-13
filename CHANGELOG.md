@@ -5,6 +5,14 @@
 
 ---
 
+## [V30.4] — 2026-07 · Hero KPI layout (Total Projects + มูลค่ารวม)
+
+### Changed
+- **การ์ด Total Projects + มูลค่ารวม = hero** ใหญ่สุด อยู่แถวบน **คู่กัน** (grid span 5/10) ตัวเลขใหญ่ขึ้น
+- การ์ดอื่น (Bidding/Hold/Win/Lost/Total Capacity) เรียงบาลานซ์แถวล่าง (span 2/10 → 5 ใบเต็มแถว)
+- Responsive: laptop 2+5 · tablet hero คู่กัน (3/6) + 3 ต่อแถว · mobile stack · TV hero สูงเด่นพิเศษ
+- ปรับ order ใน `renderKPI()` (ไม่กระทบ logic — kpiFilter ใช้ status string ไม่ใช่ index)
+
 ## [V30.3] — 2026-07 · New logo + iOS-style rounded tile
 
 ### Changed

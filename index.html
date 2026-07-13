@@ -698,6 +698,41 @@ body.pv-presenting .header,body.pv-presenting .body{margin-left:0}
   .pv-nav-ic{font-size:25px;width:32px}
   .pv-side-foot{font-size:15px;padding:26px 30px 30px}
 }
+
+/* ════════════════════════════════════════════════════════════════════════════
+   V30.4 — Hero KPI layout · Total Projects + มูลค่ารวม เด่นสุด "คู่กัน"
+   การ์ด 2 ใบนี้ใหญ่สุดอยู่แถวบน; อีก 5 ใบเรียงบาลานซ์ด้านล่าง (ปรับตามจอ)
+   grid 10 คอลัมน์: hero = span 5 (2 ใบเต็มแถว) · อื่น ๆ = span 2 (5 ใบเต็มแถว)
+   ════════════════════════════════════════════════════════════════════════════ */
+#kpi-row{display:grid;grid-template-columns:repeat(10,1fr);gap:16px;align-items:stretch}
+#kpi-row .pv-kpi-hero{grid-column:span 5}
+#kpi-row .kpi:not(.pv-kpi-hero){grid-column:span 2}
+/* ความเด่นของ hero: ใหญ่ขึ้น สูงขึ้น ตัวเลขใหญ่ */
+#kpi-row .pv-kpi-hero{padding:26px 28px;min-height:152px}
+#kpi-row .pv-kpi-hero .kpi-lbl{font-size:12px;letter-spacing:.06em}
+#kpi-row .pv-kpi-hero .kpi-val{line-height:1.06;overflow-wrap:anywhere}
+#kpi-row .pv-kpi-hero .kpi-sub{font-size:12px}
+#kpi-row .pv-kpi-hero.kpi-click:hover{transform:translateY(-5px)}
+
+/* Laptop เล็ก / tablet: hero ยังคู่กัน (span 3/6), การ์ดอื่น 3 ใบต่อแถว */
+@media(max-width:1024px){
+  #kpi-row{grid-template-columns:repeat(6,1fr)}
+  #kpi-row .pv-kpi-hero{grid-column:span 3;min-height:132px}
+  #kpi-row .kpi:not(.pv-kpi-hero){grid-column:span 2}
+}
+/* Mobile: ทุกการ์ดเต็มความกว้าง (hero เด่นอยู่แล้ว) */
+@media(max-width:640px){
+  #kpi-row{grid-template-columns:1fr;gap:12px}
+  #kpi-row .pv-kpi-hero,#kpi-row .kpi:not(.pv-kpi-hero){grid-column:span 1}
+  #kpi-row .pv-kpi-hero{min-height:0}
+}
+/* TV / จอใหญ่: hero ยิ่งเด่น */
+@media(min-width:1920px){
+  #kpi-row{gap:22px}
+  #kpi-row .pv-kpi-hero{min-height:190px;padding:34px 36px}
+  #kpi-row .pv-kpi-hero .kpi-lbl{font-size:14px}
+  #kpi-row .pv-kpi-hero .kpi-sub{font-size:14px}
+}
 </style>
 </head>
 <body>
@@ -1636,18 +1671,24 @@ function renderKPI(st){
   const valDisp=st.hasVal?"฿"+st.tval.toLocaleString("th-TH"):"—";
   const valSub=st.hasVal?`${FILTERED.filter(x=>x.value!=null).length} โครงการมีมูลค่า`:"ยังไม่กรอกข้อมูล";
   document.getElementById("kpi-row").innerHTML=[
-    {l:"Total Projects",  v:st.total,                   icon:"📋",c:"#64748b",s:"ทั้งหมด",f:"All"},
+    // V30.4: การ์ดเด่นคู่กัน (hero) — Total Projects + มูลค่ารวม ใหญ่สุด อยู่แถวบน
+    {l:"Total Projects",  v:st.total,                   icon:"📋",c:"#64748b",s:"ทั้งหมด",f:"All",hero:true},
+    {l:"มูลค่ารวม (฿)",   v:valDisp,                    icon:"💰",c:"#8b5cf6",s:valSub,scroll:"bar-value-chart",hero:true},
     {l:"Bidding",         v:st.inprog,                  icon:"📘",c:"#3b82f6",s:"อยู่ระหว่าง Bidding",f:"Bidding"},
     {l:"Hold",            v:st.hold,                    icon:"🟡",c:"#f59e0b",s:"ชะลอโครงการ",f:"Hold"},
     {l:"Win / Signed",    v:st.win,                     icon:"🏆",c:"#22c55e",s:fmt(st.wkwp,1)+" kWp",f:"Win"},
     {l:"Lost",            v:st.lost,                    icon:"❌",c:"#ef4444",s:`${st.lost} ปิดงานเนื่องจากแพ้`,f:"Lost"},
     {l:"Total Capacity",  v:fmt(st.tkwp,1)+" kWp",      icon:"☀️",c:"#0ea5e9",s:"Avg "+fmt(st.avg,0)+" kWp/proj",scroll:"bar-chart"},
-    {l:"มูลค่ารวม (฿)",   v:valDisp,                    icon:"💰",c:"#8b5cf6",s:valSub,scroll:"bar-value-chart"},
   ].map(k=>{
     const click=(k.f!=null)?`onclick="kpiFilter('${k.f}')"`:(k.scroll?`onclick="kpiScrollTo('${k.scroll}')"`:"");
     const clk=(k.f!=null||k.scroll)?" kpi-click":"";
+    const heroCls=k.hero?" pv-kpi-hero":"";
     const tip=(k.f!=null)?(k.f==="All"?"กดเพื่อแสดงทุกโครงการ":"กดเพื่อกรองเฉพาะ "+k.l):(k.scroll?"กดเพื่อไปที่กราฟ":"");
-    return `<div class="kpi${clk}" style="--c:${k.c}" ${click} title="${tip}"><div class="kpi-lbl">${k.l}<span>${k.icon}</span></div><div class="kpi-val" style="font-size:${(l=>l<=6?"clamp(26px,2vw,40px)":l<=10?"clamp(20px,1.7vw,30px)":"clamp(17px,1.45vw,26px)")(String(k.v).length)}">${k.v}</div><div class="kpi-sub">${k.s}</div></div>`;
+    // hero cards ใช้ตัวเลขใหญ่กว่า (คุมความยาวด้วย clamp กันล้น)
+    const fs=k.hero
+      ? (l=>l<=8?"clamp(34px,3.4vw,54px)":l<=14?"clamp(24px,2.5vw,42px)":"clamp(20px,2vw,34px)")(String(k.v).length)
+      : (l=>l<=6?"clamp(26px,2vw,40px)":l<=10?"clamp(20px,1.7vw,30px)":"clamp(17px,1.45vw,26px)")(String(k.v).length);
+    return `<div class="kpi${clk}${heroCls}" style="--c:${k.c}" ${click} title="${tip}"><div class="kpi-lbl">${k.l}<span>${k.icon}</span></div><div class="kpi-val" style="font-size:${fs}">${k.v}</div><div class="kpi-sub">${k.s}</div></div>`;
   }).join("");
 }
 
