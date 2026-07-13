@@ -580,16 +580,17 @@ td,th{overflow-wrap:anywhere}
    ════════════════════════════════════════════════════════════════════════════ */
 :root{
   --pv-side-w:252px;
-  --pv-teal-1:#0b2027; --pv-teal-2:#123c46; --pv-teal-3:#155e66;
-  --pv-brand-green:#38c172; --pv-brand-blue:#2b9fd8;
+  /* V30.1 brand palette (จากภาพอ้างอิงผู้ใช้): mint → blue → indigo */
+  --pv-mint:#3EFFD4; --pv-blue:#00B4FF; --pv-indigo:#3262FF;
 }
 
 /* ── App shell: fixed sidebar (desktop) ─────────────────────────────────────── */
 #pv-side{position:fixed;left:0;top:0;bottom:0;width:var(--pv-side-w);z-index:1200;
   display:flex;flex-direction:column;
-  background:linear-gradient(180deg,#0b2027 0%,#123b45 52%,#0d3038 100%);
-  border-right:1px solid rgba(255,255,255,.06);
-  box-shadow:8px 0 34px -20px rgba(6,12,16,.75);
+  /* vibrant brand gradient: indigo (บน) → blue → mint glow (ล่าง) — ตัวหนังสือขาวอ่านชัดช่วงบน/กลาง */
+  background:linear-gradient(178deg,#3262FF 0%,#1f7ff0 38%,#00B4FF 74%,#3EFFD4 122%);
+  border-right:1px solid rgba(255,255,255,.14);
+  box-shadow:8px 0 34px -20px rgba(20,30,90,.55);
   overflow-y:auto;overflow-x:hidden}
 .pv-side-brand{padding:20px 18px 14px;display:flex;align-items:center;justify-content:center}
 .pv-side-brand img{width:100%;max-width:196px;height:auto;display:block;border-radius:14px;
@@ -599,23 +600,24 @@ td,th{overflow-wrap:anywhere}
 .pv-side-nav{display:flex;flex-direction:column;gap:3px;padding:2px 12px 10px}
 .pv-nav-item{display:flex;align-items:center;gap:12px;width:100%;
   padding:10px 13px;border:none;border-radius:12px;cursor:pointer;
-  background:transparent;color:rgba(255,255,255,.74);font-family:inherit;
+  background:transparent;color:rgba(255,255,255,.86);font-family:inherit;
   font-size:13px;font-weight:600;text-align:left;line-height:1.2;
+  text-shadow:0 1px 2px rgba(20,30,90,.28);
   transition:background .16s,color .16s;position:relative}
 .pv-nav-ic{font-size:16px;width:20px;text-align:center;flex-shrink:0;filter:saturate(1.1)}
-.pv-nav-item:hover{background:rgba(255,255,255,.07);color:#fff}
-.pv-nav-item.active{color:#fff;
-  background:linear-gradient(100deg,rgba(56,193,114,.24),rgba(43,159,216,.18));
-  box-shadow:inset 0 0 0 1px rgba(255,255,255,.10)}
+.pv-nav-item:hover{background:rgba(255,255,255,.16);color:#fff}
+.pv-nav-item.active{color:#0b1f4d;text-shadow:none;
+  background:rgba(255,255,255,.92);
+  box-shadow:0 6px 16px -6px rgba(20,30,90,.45)}
 .pv-nav-item.active::before{content:"";position:absolute;left:-12px;top:50%;
   transform:translateY(-50%);width:4px;height:24px;border-radius:0 4px 4px 0;
-  background:linear-gradient(180deg,var(--pv-brand-green),var(--pv-brand-blue))}
+  background:linear-gradient(180deg,var(--pv-mint),var(--pv-blue))}
 .pv-nav-item .pv-nav-badge{margin-left:auto;background:#ef4444;color:#fff;
   border-radius:10px;font-size:10px;font-weight:800;padding:1px 6px;line-height:1.5;display:none}
 .pv-side-foot{margin-top:auto;padding:14px 18px 18px;
-  font-size:10px;line-height:1.7;color:rgba(255,255,255,.4);
-  border-top:1px solid rgba(255,255,255,.06)}
-.pv-side-foot b{color:rgba(255,255,255,.66);font-weight:700}
+  font-size:10px;line-height:1.7;color:rgba(11,31,77,.62);
+  border-top:1px solid rgba(11,31,77,.14);text-shadow:0 1px 1px rgba(255,255,255,.25)}
+.pv-side-foot b{color:rgba(11,31,77,.9);font-weight:800}
 
 /* ── Desktop: make room for the sidebar, retire the top tabs, retint header ─── */
 @media(min-width:900px){
@@ -624,13 +626,13 @@ td,th{overflow-wrap:anywhere}
   .header{padding-top:16px}
   .header-top{margin-bottom:10px}
 }
-/* Header retint → teal family so it reads as one chrome with the sidebar/logo */
+/* Header retint → blue→indigo (โทนเดียวกับ sidebar); mint radial accent; ตัวอักษรขาวคอนทราสต์ชัด */
 .header{background:
-    radial-gradient(900px 200px at 6% -70%,rgba(56,193,114,.30),transparent 62%),
-    linear-gradient(112deg,#0b2027 0%,#123c46 52%,#155e66 100%)}
-.tab.active{color:#0b2027}
-.pg-btn.active{background:#155e66;border-color:#155e66}
-:root{--brand:#0e7c86;--brand-ink:#0b3b40}
+    radial-gradient(900px 220px at 6% -70%,rgba(62,255,212,.34),transparent 60%),
+    linear-gradient(114deg,#3262FF 0%,#1583e6 52%,#00B4FF 100%)}
+.tab.active{color:#1e2a78}
+.pg-btn.active{background:#3262FF;border-color:#3262FF}
+:root{--brand:#3262FF;--brand-ink:#1e2a78;--brand-2:#00B4FF}
 
 /* ── Mobile: hide the sidebar, keep the original top-tab flow untouched ─────── */
 @media(max-width:899px){ #pv-side{display:none} }

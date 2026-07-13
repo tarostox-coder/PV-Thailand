@@ -5,6 +5,20 @@
 
 ---
 
+## [V30.1] — 2026-07 · Brand palette recolor (mint → blue → indigo)
+
+> ปรับ **โทนสี chrome** ให้ตรงภาพ palette อ้างอิงผู้ใช้ — `#3EFFD4` mint · `#00B4FF` blue · `#3262FF` indigo
+
+### Changed
+- **Sidebar**: gradient สดใส indigo (บน) → blue → mint (glow ล่าง) ตาม palette (โทนเดียวกับ ref dashboard)
+- **Header**: blue → indigo gradient + mint radial accent (ตัวอักษรขาวคอนทราสต์ชัด)
+- **Nav item ที่ active**: เปลี่ยนเป็น pill ขาว ตัวอักษร indigo เข้ม (แบบ ref) + แถบ accent mint→blue
+- Brand tokens (`--brand`/`--brand-2`/`--brand-ink`), ปุ่ม `.pg-btn.active`, `.tab.active` → โทน indigo/blue
+- Footer sidebar: ตัวอักษรเข้มขึ้น (อยู่บนพื้น mint สว่าง) เพื่อคอนทราสต์
+
+### Notes
+- โลโก้ Power Vault คงเดิม (ไฟล์ต้นฉบับเดียวกัน) · สีสถานะ KPI (Bidding/Hold/Win/Lost) ไม่แตะ — คงความหมายเดิม
+
 ## [V30.0] — 2026-07 · Power Vault Sidebar App-Shell + Logo (UI-only)
 
 > **เปลี่ยนโครง layout ที่มองเห็นชัด** — จาก navigation แบบ tabs บนหัว → **sidebar ซ้าย**
