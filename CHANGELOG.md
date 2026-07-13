@@ -5,6 +5,22 @@
 
 ---
 
+## [V30.2] — 2026-07 · Responsive sizing across all platforms
+
+> ปรับสัดส่วน sidebar/โลโก้/เมนู ให้พอดีทุกจอ + โชว์โลโก้บนมือถือ (UI-only · additive)
+
+### Added
+- **โลโก้ Power Vault บน header (มือถือ)** — แสดงเมื่อ sidebar ถูกซ่อน (<900px), ซ่อน ☀️ emoji แทน
+- Breakpoint ครบทุก platform ผ่านตัวแปร `--pv-side-w` (content เลื่อนตามอัตโนมัติ):
+  - **มือถือ** (<900px): ซ่อน sidebar → tabs บนหัว + โลโก้ header
+  - **แท็บเล็ต/แล็ปท็อปเล็ก** (900–1279): sidebar 214px (แคบลง ไม่อึดอัด)
+  - **เดสก์ท็อป** (1280–1919): 252px (ค่าเริ่มต้น)
+  - **Full-HD TV** (≥1920): 300px + โลโก้/เมนู/ตัวอักษรใหญ่ขึ้น (อ่านชัดระยะไกล)
+  - **4K TV** (≥2560): 392px + สเกลใหญ่ขึ้นอีก
+
+### Notes
+- ปรับเฉพาะ chrome/ขนาด · ไม่แตะ logic/data/สีสถานะ KPI
+
 ## [V30.1] — 2026-07 · Brand palette recolor (mint → blue → indigo)
 
 > ปรับ **โทนสี chrome** ให้ตรงภาพ palette อ้างอิงผู้ใช้ — `#3EFFD4` mint · `#00B4FF` blue · `#3262FF` indigo
