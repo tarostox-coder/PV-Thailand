@@ -733,24 +733,54 @@ body.pv-presenting .header,body.pv-presenting .body{margin-left:0}
   #kpi-row .pv-kpi-hero .kpi-lbl{font-size:14px}
   #kpi-row .pv-kpi-hero .kpi-sub{font-size:14px}
 }
+
+/* ════════════════════════════════════════════════════════════════════════════
+   V30.5 — Collapsible sidebar (ย่อ/ขยาย เพิ่มพื้นที่) + label wrapping
+   ปุ่มมุมบน sidebar สลับ full ↔ icon-rail (72px); เก็บสถานะใน localStorage
+   ════════════════════════════════════════════════════════════════════════════ */
+#pv-side-toggle{align-self:flex-end;margin:10px 12px -2px;flex-shrink:0;
+  width:30px;height:30px;border-radius:9px;border:none;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  background:rgba(255,255,255,.18);color:#fff;transition:background .16s}
+#pv-side-toggle:hover{background:rgba(255,255,255,.34)}
+#pv-side-toggle svg{transition:transform .22s}
+@media(max-width:899px){ #pv-side-toggle{display:none} }   /* มือถือใช้ tabs อยู่แล้ว */
+
+/* Collapsed → icon rail แคบ (72px) เพื่อเพิ่มพื้นที่เนื้อหา */
+body.pv-side-collapsed{--pv-side-w:72px}
+body.pv-side-collapsed .pv-side-brand,
+body.pv-side-collapsed .pv-nav-cap,
+body.pv-side-collapsed .pv-side-foot,
+body.pv-side-collapsed .pv-nav-lbl{display:none}
+body.pv-side-collapsed .pv-side-nav{padding:2px 12px 10px}
+body.pv-side-collapsed .pv-nav-item{justify-content:center;padding:12px 0;gap:0}
+body.pv-side-collapsed .pv-nav-item.active::before{display:none}
+body.pv-side-collapsed .pv-nav-item .pv-nav-badge{position:absolute;top:6px;right:14px;
+  margin:0;min-width:9px;width:9px;height:9px;padding:0;font-size:0;border-radius:50%;line-height:0}
+body.pv-side-collapsed #pv-side-toggle{align-self:center;margin:12px 0 6px}
+body.pv-side-collapsed #pv-side-toggle svg{transform:rotate(180deg)}
 </style>
 </head>
 <body>
 
 <!-- ══ V30: POWER VAULT sidebar (desktop nav) — mirrors .tab buttons; showTab() logic untouched ══ -->
 <aside id="pv-side">
+  <button id="pv-side-toggle" onclick="toggleSidebar()" title="ย่อ/ขยายเมนู" aria-label="ย่อ/ขยายเมนู">
+    <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+  </button>
   <div class="pv-side-brand">
     <img src="data:image/png;base64,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" alt="Power Vault" />
   </div>
   <div class="pv-nav-cap">เมนูหลัก · Menu</div>
   <nav class="pv-side-nav">
-    <button class="pv-nav-item active" data-tab="overview" onclick="showTab('overview')"><span class="pv-nav-ic">📊</span>Overview</button>
-    <button class="pv-nav-item" data-tab="gantt" onclick="showTab('gantt')"><span class="pv-nav-ic">📅</span>Gantt</button>
-    <button class="pv-nav-item" data-tab="alerts" onclick="showTab('alerts')"><span class="pv-nav-ic">🚦</span>Alerts</button>
-    <button class="pv-nav-item" data-tab="activity" onclick="showTab('activity')"><span class="pv-nav-ic">📝</span>Activity<span class="pv-nav-badge" id="pv-side-act-badge"></span></button>
-    <button class="pv-nav-item" data-tab="schema" onclick="showTab('schema')"><span class="pv-nav-ic">🔍</span>Schema</button>
-    <button class="pv-nav-item" data-tab="upload" onclick="showTab('upload')"><span class="pv-nav-ic">📂</span>Data</button>
-    <button class="pv-nav-item" data-tab="pbi" onclick="showTab('pbi')"><span class="pv-nav-ic">⚙️</span>Power BI</button>
+    <button class="pv-nav-item active" data-tab="overview" onclick="showTab('overview')" title="Overview"><span class="pv-nav-ic">📊</span><span class="pv-nav-lbl">Overview</span></button>
+    <button class="pv-nav-item" data-tab="projects" onclick="showTab('projects')" title="Project List"><span class="pv-nav-ic">📋</span><span class="pv-nav-lbl">Project List</span></button>
+    <button class="pv-nav-item" data-tab="gantt" onclick="showTab('gantt')" title="Gantt"><span class="pv-nav-ic">📅</span><span class="pv-nav-lbl">Gantt</span></button>
+    <button class="pv-nav-item" data-tab="alerts" onclick="showTab('alerts')" title="Alerts"><span class="pv-nav-ic">🚦</span><span class="pv-nav-lbl">Alerts</span></button>
+    <button class="pv-nav-item" data-tab="activity" onclick="showTab('activity')" title="Activity"><span class="pv-nav-ic">📝</span><span class="pv-nav-lbl">Activity</span><span class="pv-nav-badge" id="pv-side-act-badge"></span></button>
+    <button class="pv-nav-item" data-tab="schema" onclick="showTab('schema')" title="Schema"><span class="pv-nav-ic">🔍</span><span class="pv-nav-lbl">Schema</span></button>
+    <button class="pv-nav-item" data-tab="upload" onclick="showTab('upload')" title="Data"><span class="pv-nav-ic">📂</span><span class="pv-nav-lbl">Data</span></button>
+    <button class="pv-nav-item" data-tab="pbi" onclick="showTab('pbi')" title="Power BI"><span class="pv-nav-ic">⚙️</span><span class="pv-nav-lbl">Power BI</span></button>
   </nav>
   <div class="pv-side-foot"><b>PV Project Dashboard</b><br>2-Layer Status · Live Google Sheet</div>
 </aside>
@@ -792,6 +822,7 @@ body.pv-presenting .header,body.pv-presenting .body{margin-left:0}
   </div>
   <div class="tabs">
     <button class="tab active" onclick="showTab('overview')">📊 Overview</button>
+    <button class="tab" onclick="showTab('projects')">📋 Project List</button>
     <button class="tab" onclick="showTab('gantt')">📅 Gantt</button>
     <button class="tab" onclick="showTab('alerts')">🚦 Alerts</button>
     <button class="tab" onclick="showTab('activity')">📝 Activity <span id="activity-badge" class="act-badge" style="display:none"></span></button>
@@ -979,6 +1010,10 @@ body.pv-presenting .header,body.pv-presenting .body{margin-left:0}
       <canvas id="area-chart" height="120"></canvas>
       <div id="growth-empty" style="display:none;color:#94a3b8;text-align:center;padding:30px;font-size:12px">ไม่มีข้อมูล Start Date — ไม่สามารถแสดงกราฟ Pipeline Growth ได้</div>
     </div>
+  </div>
+
+  <!-- PROJECT LIST — V30.5: ย้ายมาเป็นหน้า/แท็บแยกต่างหาก -->
+  <div id="tab-projects" style="display:none">
     <div class="card">
       <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;margin-bottom:12px">
         <div class="card-title" style="margin-bottom:0">📋 Project List <span id="proj-count" style="font-weight:400;color:#94a3b8"></span></div>
@@ -1700,8 +1735,9 @@ function kpiFilter(status){
     const sel=document.getElementById("f_status");
     if(sel){ sel.value=status; if(typeof onLayer1Change==="function") onLayer1Change(); else applyFilters(); }
   }
-  const t=document.querySelector("#tab-overview .ov");
-  if(t) t.scrollIntoView({behavior:"smooth",block:"center"});
+  // V30.5: Project List ย้ายไปแท็บแยก → กรองแล้วสลับไปหน้านั้นให้เห็นผลทันที
+  if(typeof showTab==="function") showTab("projects");
+  setTimeout(()=>{ const t=document.querySelector("#tab-projects .ov"); if(t) t.scrollIntoView({behavior:"smooth",block:"start"}); },60);
 }
 // V28.2 — click a metric card to scroll to its related chart
 function kpiScrollTo(canvasId){
@@ -2322,13 +2358,20 @@ function renderAll(d){
 
 // ── Tabs ──────────────────────────────────────────────────
 function showTab(n){
-  ["overview","gantt","alerts","activity","schema","upload","pbi"].forEach(t=>document.getElementById("tab-"+t).style.display=t===n?"block":"none");
-  document.querySelectorAll(".tab").forEach((b,i)=>b.classList.toggle("active",["overview","gantt","alerts","activity","schema","upload","pbi"][i]===n));
+  ["overview","projects","gantt","alerts","activity","schema","upload","pbi"].forEach(t=>document.getElementById("tab-"+t).style.display=t===n?"block":"none");
+  document.querySelectorAll(".tab").forEach((b,i)=>b.classList.toggle("active",["overview","projects","gantt","alerts","activity","schema","upload","pbi"][i]===n));
   if(n==="schema") renderSchema();
   if(n==="activity"){ try{ renderActivity(); markActivitySeen(); }catch(e){} }
   // V30: mirror the active state onto the Power Vault sidebar nav
   try{ document.querySelectorAll("#pv-side .pv-nav-item").forEach(function(b){ b.classList.toggle("active", b.dataset.tab===n); }); }catch(e){}
 }
+
+// V30.5: ย่อ/ขยาย sidebar เพื่อเพิ่มพื้นที่ (เก็บสถานะใน localStorage)
+function toggleSidebar(){
+  var c=document.body.classList.toggle("pv-side-collapsed");
+  try{ localStorage.setItem("pv-side-collapsed", c?"1":"0"); }catch(e){}
+}
+try{ if(localStorage.getItem("pv-side-collapsed")==="1"&&document.body) document.body.classList.add("pv-side-collapsed"); }catch(e){}
 
 // ── File Upload ───────────────────────────────────────────
 function showMsg(t,txt){const el=document.getElementById("umsg");el.className="umsg "+(t==="ok"?"umsg-ok":t==="err"?"umsg-err":"umsg-load");el.textContent=txt;el.style.display="block";}
@@ -4108,9 +4151,9 @@ function renderMissingPanel(q){
     <div style="display:flex;flex-direction:column;gap:7px;margin-top:10px;max-height:280px;overflow:auto">${items}</div>`;
 }
 function jumpToProject(name){
-  if(typeof showTab==="function") showTab("overview");
+  if(typeof showTab==="function") showTab("projects");
   const s=document.getElementById("search"); if(s){ s.value=name; if(typeof applyFilters==="function") applyFilters(); }
-  setTimeout(()=>{ const t=document.querySelector("#tab-overview .ov"); if(t) t.scrollIntoView({behavior:"smooth",block:"center"}); },180);
+  setTimeout(()=>{ const t=document.querySelector("#tab-projects .ov"); if(t) t.scrollIntoView({behavior:"smooth",block:"center"}); },180);
 }
 
 // ══ PART 11: Live status badges in header ═══════════════════════════════════
@@ -4715,7 +4758,7 @@ setInterval(()=>{ try{ renderExecPanel(__EXQ); renderLiveBadges(__EXQ); HEALTH_S
 
   // ── 2: Click-to-Navigate → filter + scroll + temporary row highlight ─────
   jumpToProject=function(name){
-    if(typeof showTab==="function") showTab("overview");
+    if(typeof showTab==="function") showTab("projects");
     var s=document.getElementById("search");
     if(s){ s.value=name; if(typeof applyFilters==="function") applyFilters(); }
     setTimeout(function(){
@@ -4729,7 +4772,7 @@ setInterval(()=>{ try{ renderExecPanel(__EXQ); renderLiveBadges(__EXQ); HEALTH_S
         void target.offsetWidth; target.classList.add("pv-row-hl");
         setTimeout(function(){ target.classList.remove("pv-row-hl"); },2600);
       }else{
-        var w=document.querySelector("#tab-overview .ov"); if(w) w.scrollIntoView({behavior:"smooth",block:"center"});
+        var w=document.querySelector("#tab-projects .ov"); if(w) w.scrollIntoView({behavior:"smooth",block:"center"});
       }
     },230);
   };
