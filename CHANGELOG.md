@@ -5,6 +5,28 @@
 
 ---
 
+## [V30.0] — 2026-07 · Power Vault Sidebar App-Shell + Logo (UI-only)
+
+> **เปลี่ยนโครง layout ที่มองเห็นชัด** — จาก navigation แบบ tabs บนหัว → **sidebar ซ้าย**
+> ตามภาพอ้างอิงผู้ใช้ (Data Performance / School ERP dashboards) พร้อมฝัง **โลโก้ Power Vault**
+> ไม่แตะ business logic / KPI calc / filters / sync / charts / export — เป็น CSS + markup + wrapper JS ล้วน
+
+### Added
+- **Sidebar app-shell (`#pv-side`)** — แถบเมนูซ้ายแบบ fixed, พื้น gradient teal เข้าชุดโลโก้,
+  รายการเมนู 7 อัน (Overview/Gantt/Alerts/Activity/Schema/Data/Power BI) เป็น mirror ของปุ่ม `.tab`
+  เดิม — เรียก `showTab()` ตัวเดิม ไม่แก้ logic; active state + badge Activity ซิงก์เข้ามาด้วย
+- **โลโก้ Power Vault** ฝังเป็น data-URI (inline PNG) บนหัว sidebar — ไม่มี asset ภายนอก
+- Header retint เป็นโทน teal ให้อ่านเป็น chrome เดียวกับ sidebar/โลโก้
+
+### Changed
+- Desktop (≥900px): เนื้อหาเลื่อนขวาเปิดที่ให้ sidebar (`margin-left`), ซ่อน tabs บนหัว
+- **Mobile (<900px): ซ่อน sidebar กลับไปใช้ tabs บนหัวเหมือนเดิมทุกอย่าง** (คงพฤติกรรมเดิมครบ)
+- Exec view (`/exec`) + Presentation mode + print: ซ่อน sidebar → มุมมองเต็มความกว้าง สะอาด
+
+### Notes
+- ทุก id/class/handler เดิม + สีสถานะ (Bidding/Hold/Win/Lost) — คงไว้ครบ
+- `showTab()` เดิมไม่ถูกแก้ (เพิ่มเพียง sync บรรทัดเดียว), `updateActivityBadge()` เพิ่ม mirror badge
+
 ## [V29.0–29.3] — 2026-06 · Modern SaaS UI Redesign (UI-only)
 
 > **Visual redesign เท่านั้น** — ไม่แตะ business logic, KPI calc, filters,
