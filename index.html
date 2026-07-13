@@ -543,6 +543,29 @@ td,th{overflow-wrap:anywhere}
 
 /* ── Chart card polish: tighter title-to-chart rhythm, easier to scan ── */
 .chart-row>.card .card-title{margin-bottom:12px}
+
+/* ════════════════════════════════════════════════════════════════════════════
+   V29.7 — KPI gradient tuned to Coupler.io/Salesforce CRM reference (UI-only)
+   Cleaner, more vibrant diagonal 2-3 stop gradient (lighter bottom than V29.3),
+   rounded corners, roomy padding, top sheen. White text kept; text-shadow
+   preserves legibility on lighter hues (amber Hold). Status semantics intact.
+   ════════════════════════════════════════════════════════════════════════════ */
+.kpi{
+  border-radius:16px;
+  padding:20px 22px;
+  background-image:linear-gradient(135deg,
+      color-mix(in srgb,var(--c,#1d4ed8) 100%,#ffffff 16%) 0%,
+      var(--c,#1d4ed8) 58%,
+      color-mix(in srgb,var(--c,#1d4ed8) 100%,#0b1220 15%) 100%);
+  box-shadow:0 10px 22px -12px rgba(16,24,40,.28),0 1px 2px rgba(16,24,40,.06);
+}
+/* label: small uppercase top row like the reference */
+.kpi .kpi-lbl,.kpi .klbl{font-size:10.5px;letter-spacing:.06em;opacity:.94;margin-bottom:6px}
+.kpi .kpi-val,.kpi .kval{letter-spacing:-0.025em;text-shadow:0 1px 2px rgba(11,18,32,.26)}
+.kpi .kpi-sub,.kpi .ksub{opacity:.86;margin-top:6px}
+.kpi-click:hover{transform:translateY(-4px);
+  box-shadow:0 18px 36px -14px rgba(16,24,40,.36),0 3px 8px -4px rgba(16,24,40,.16)}
+@media(min-width:1921px){ .kpi{border-radius:20px;padding:26px 30px} }
 </style>
 </head>
 <body>
