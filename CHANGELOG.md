@@ -5,6 +5,12 @@
 
 ---
 
+## [V30.3] — 2026-07 · New logo + iOS-style rounded tile
+
+### Changed
+- **โลโก้ใหม่** (Power Vault บนพื้นขาว ตามไฟล์ต้นฉบับ) แทนตัวเดิม — ทั้ง sidebar และ header มือถือ
+- **กรอบมนแบบไอคอนเมนู iOS** — tile ขาว มุมมน (border-radius 24px sidebar / 12px header) + soft shadow
+
 ## [V30.2] — 2026-07 · Responsive sizing across all platforms
 
 > ปรับสัดส่วน sidebar/โลโก้/เมนู ให้พอดีทุกจอ + โชว์โลโก้บนมือถือ (UI-only · additive)
