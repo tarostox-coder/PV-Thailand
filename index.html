@@ -759,6 +759,38 @@ body.pv-side-collapsed .pv-nav-item .pv-nav-badge{position:absolute;top:6px;righ
   margin:0;min-width:9px;width:9px;height:9px;padding:0;font-size:0;border-radius:50%;line-height:0}
 body.pv-side-collapsed #pv-side-toggle{align-self:center;margin:12px 0 6px}
 body.pv-side-collapsed #pv-side-toggle svg{transform:rotate(180deg)}
+
+/* ════════════════════════════════════════════════════════════════════════════
+   V30.6 — ย้าย Filters + Export/Share + status tiles เข้า sidebar; ซ่อน Schema/PBI
+   ════════════════════════════════════════════════════════════════════════════ */
+.pv-side-cap2{padding-top:12px!important;margin-top:4px;border-top:1px solid rgba(255,255,255,.12)}
+.pv-side-actions{display:flex;flex-direction:column;gap:6px;padding:2px 12px 8px}
+.pv-side-btn{display:flex;align-items:center;gap:12px;width:100%;
+  padding:9px 13px;border-radius:12px;cursor:pointer;
+  background:rgba(255,255,255,.12);color:#fff;font-family:inherit;
+  font-size:13px;font-weight:600;text-align:left;line-height:1.2;
+  border:1px solid rgba(255,255,255,.18);
+  transition:background .16s,border-color .16s;position:relative}
+.pv-side-btn:hover{background:rgba(255,255,255,.26);border-color:rgba(255,255,255,.4)}
+.pv-side-btn .pv-nav-ic{display:flex;align-items:center;justify-content:center;color:#fff}
+.pv-side-btn .pv-fbtn-badge{margin-left:auto;display:none;align-items:center;justify-content:center;
+  min-width:18px;height:18px;padding:0 5px;background:#ef4444;color:#fff;border-radius:10px;font-size:11px;font-weight:800}
+
+/* status tiles ภายใน sidebar → เรียงแนวตั้งเต็มความกว้าง */
+#pv-side #pv-head-status{flex-direction:column;justify-content:flex-start;gap:8px;
+  padding:4px 12px 6px;margin:2px 0 0;flex-wrap:nowrap}
+#pv-side #pv-head-status .pv-htile{width:100%;min-width:0;flex:none}
+
+/* Collapsed → ซ่อน tools cap / status / label; action เหลือแต่ไอคอน */
+body.pv-side-collapsed .pv-side-cap2,
+body.pv-side-collapsed #pv-side #pv-head-status{display:none}
+body.pv-side-collapsed .pv-side-btn{justify-content:center;padding:11px 0;gap:0;
+  background:transparent;border-color:transparent}
+body.pv-side-collapsed .pv-side-btn:hover{background:rgba(255,255,255,.16)}
+body.pv-side-collapsed .pv-side-btn .pv-fbtn-badge{position:absolute;top:5px;right:14px;
+  margin:0;min-width:9px;width:9px;height:9px;padding:0;font-size:0;border-radius:50%}
+/* Filters/Export บนหัว: โชว์เฉพาะมือถือ (desktop ใช้ที่ sidebar) */
+@media(max-width:899px){ .pv-mob-tool{display:inline-flex!important} }
 </style>
 </head>
 <body>
@@ -778,10 +810,29 @@ body.pv-side-collapsed #pv-side-toggle svg{transform:rotate(180deg)}
     <button class="pv-nav-item" data-tab="gantt" onclick="showTab('gantt')" title="Gantt"><span class="pv-nav-ic">📅</span><span class="pv-nav-lbl">Gantt</span></button>
     <button class="pv-nav-item" data-tab="alerts" onclick="showTab('alerts')" title="Alerts"><span class="pv-nav-ic">🚦</span><span class="pv-nav-lbl">Alerts</span></button>
     <button class="pv-nav-item" data-tab="activity" onclick="showTab('activity')" title="Activity"><span class="pv-nav-ic">📝</span><span class="pv-nav-lbl">Activity</span><span class="pv-nav-badge" id="pv-side-act-badge"></span></button>
-    <button class="pv-nav-item" data-tab="schema" onclick="showTab('schema')" title="Schema"><span class="pv-nav-ic">🔍</span><span class="pv-nav-lbl">Schema</span></button>
-    <button class="pv-nav-item" data-tab="upload" onclick="showTab('upload')" title="Data"><span class="pv-nav-ic">📂</span><span class="pv-nav-lbl">Data</span></button>
-    <button class="pv-nav-item" data-tab="pbi" onclick="showTab('pbi')" title="Power BI"><span class="pv-nav-ic">⚙️</span><span class="pv-nav-lbl">Power BI</span></button>
+    <button class="pv-nav-item" data-tab="upload" onclick="showTab('upload')" title="Data &amp; Sync"><span class="pv-nav-ic">📂</span><span class="pv-nav-lbl">Data &amp; Sync</span></button>
   </nav>
+  <!-- V30.6: Filters + Export/Share ย้ายมาไว้ที่ sidebar -->
+  <div class="pv-nav-cap pv-side-cap2">เครื่องมือ · Tools</div>
+  <div class="pv-side-actions">
+    <button id="pv-filters-btn" class="pv-side-btn" onclick="toggleFilterDrawer()" title="ตัวกรองข้อมูล (Filters)">
+      <span class="pv-nav-ic"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/></svg></span>
+      <span class="pv-nav-lbl">Filters</span><span class="pv-fbtn-badge" style="display:none"></span>
+    </button>
+    <button class="pv-side-btn" onclick="openExportModal()" title="Export / Share">
+      <span class="pv-nav-ic"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg></span>
+      <span class="pv-nav-lbl">Export / Share</span>
+    </button>
+  </div>
+  <!-- V30.6: status tiles (Live Data / Completeness / Health) ย้ายมาฝั่งซ้าย (ตอนขยายเมนู) -->
+  <div id="pv-head-status">
+    <div class="pv-htile" id="exec-tile-status">
+      <div class="pv-htile-h">📡 Live Data Status</div>
+      <div id="exec-panel-body"></div>
+    </div>
+    <div class="pv-htile" id="exec-kpi-quality"></div>
+    <div class="pv-htile" id="exec-kpi-health"></div>
+  </div>
   <div class="pv-side-foot"><b>PV Project Dashboard</b><br>2-Layer Status · Live Google Sheet</div>
 </aside>
 
@@ -801,24 +852,14 @@ body.pv-side-collapsed #pv-side-toggle svg{transform:rotate(180deg)}
         <svg class="rf-ico" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0114.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0020.49 15"/></svg>
         <span class="rf-label">Refresh</span>
       </button>
-      <button id="pv-filters-btn" onclick="toggleFilterDrawer()" title="ตัวกรองข้อมูล (Filters)" style="display:flex;align-items:center;gap:6px;background:rgba(255,255,255,.15);border:1.5px solid rgba(255,255,255,.4);border-radius:20px;padding:5px 14px;color:#fff;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;transition:all .2s" onmouseover="this.style.background='rgba(255,255,255,.28)'" onmouseout="this.style.background='rgba(255,255,255,.15)'">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/></svg>
-        Filters<span class="pv-fbtn-badge" style="display:none"></span>
+      <!-- V30.6: Filters + Export บนหัว เฉพาะมือถือ (desktop ใช้ที่ sidebar) -->
+      <button class="pv-mob-tool" onclick="toggleFilterDrawer()" title="ตัวกรองข้อมูล (Filters)" style="display:none;align-items:center;gap:6px;background:rgba(255,255,255,.15);border:1.5px solid rgba(255,255,255,.4);border-radius:20px;padding:5px 14px;color:#fff;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/></svg>Filters
       </button>
-      <button onclick="openExportModal()" style="display:flex;align-items:center;gap:6px;background:rgba(255,255,255,.15);border:1.5px solid rgba(255,255,255,.4);border-radius:20px;padding:5px 14px;color:#fff;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;transition:all .2s" onmouseover="this.style.background='rgba(255,255,255,.28)'" onmouseout="this.style.background='rgba(255,255,255,.15)'">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-        Export / Share
+      <button class="pv-mob-tool" onclick="openExportModal()" title="Export / Share" style="display:none;align-items:center;gap:6px;background:rgba(255,255,255,.15);border:1.5px solid rgba(255,255,255,.4);border-radius:20px;padding:5px 14px;color:#fff;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>Export
       </button>
     </div>
-  </div>
-  <!-- V28.1: executive status tiles relocated into the header (top-right) -->
-  <div id="pv-head-status">
-    <div class="pv-htile" id="exec-tile-status">
-      <div class="pv-htile-h">📡 Live Data Status</div>
-      <div id="exec-panel-body"></div>
-    </div>
-    <div class="pv-htile" id="exec-kpi-quality"></div>
-    <div class="pv-htile" id="exec-kpi-health"></div>
   </div>
   <div class="tabs">
     <button class="tab active" onclick="showTab('overview')">📊 Overview</button>
@@ -826,9 +867,9 @@ body.pv-side-collapsed #pv-side-toggle svg{transform:rotate(180deg)}
     <button class="tab" onclick="showTab('gantt')">📅 Gantt</button>
     <button class="tab" onclick="showTab('alerts')">🚦 Alerts</button>
     <button class="tab" onclick="showTab('activity')">📝 Activity <span id="activity-badge" class="act-badge" style="display:none"></span></button>
-    <button class="tab" onclick="showTab('schema')">🔍 Schema</button>
-    <button class="tab" onclick="showTab('upload')">📂 Data</button>
-    <button class="tab" onclick="showTab('pbi')">⚙️ Power BI</button>
+    <button class="tab" onclick="showTab('schema')" style="display:none">🔍 Schema</button>
+    <button class="tab" onclick="showTab('upload')">📂 Data &amp; Sync</button>
+    <button class="tab" onclick="showTab('pbi')" style="display:none">⚙️ Power BI</button>
   </div>
 </div>
 
@@ -3908,6 +3949,9 @@ function initExecView(){
       const oc=b.getAttribute("onclick")||"";
       if(/'(schema|upload|pbi)'/.test(oc)) b.classList.add("pv-tab-hide");
     });
+    // V30.6: exec ซ่อน sidebar → ย้าย status tiles กลับไปบน header เพื่อให้ยังเห็น
+    try{ var hs=document.getElementById("pv-head-status"), tabs=document.querySelector(".header .tabs");
+      if(hs&&tabs&&tabs.parentNode){ tabs.parentNode.insertBefore(hs,tabs); } }catch(e){}
     document.getElementById("today-lbl").textContent=
       new Date().toLocaleDateString("th-TH",{year:"numeric",month:"long",day:"numeric"})+" | Executive View · Live";
     // Always connect to the canonical Google Sheet so the page is current with zero manual steps
