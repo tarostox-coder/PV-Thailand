@@ -791,6 +791,17 @@ body.pv-side-collapsed .pv-side-btn .pv-fbtn-badge{position:absolute;top:5px;rig
   margin:0;min-width:9px;width:9px;height:9px;padding:0;font-size:0;border-radius:50%}
 /* Filters/Export บนหัว: โชว์เฉพาะมือถือ (desktop ใช้ที่ sidebar) */
 @media(max-width:899px){ .pv-mob-tool{display:inline-flex!important} }
+
+/* ════════ V30.7 — Data & Sync: รวม upload เข้ากับ Auto-Sync + ซ่อนคำอธิบายส่วนเกิน ════════ */
+.pv-or-sep{display:flex;align-items:center;gap:12px;margin:18px 0 12px;color:#94a3b8;font-size:11px;font-weight:800;letter-spacing:.04em}
+.pv-or-sep::before,.pv-or-sep::after{content:"";flex:1;height:1px;background:#e2e8f0}
+.pv-howto{margin-top:14px;font-size:11.5px;color:#475569}
+.pv-howto>summary{cursor:pointer;font-weight:800;color:#1e40af;font-size:12px;list-style:none;user-select:none;display:inline-flex;align-items:center;gap:6px}
+.pv-howto>summary::-webkit-details-marker{display:none}
+.pv-howto>summary::before{content:"▸";transition:transform .15s}
+.pv-howto[open]>summary::before{transform:rotate(90deg)}
+.pv-howto-body{margin-top:8px;padding:12px 16px;background:#f8fafc;border-radius:10px;line-height:1.9;border-left:3px solid #3b82f6}
+.pv-howto-body div{margin-bottom:2px}
 </style>
 </head>
 <body>
@@ -1174,17 +1185,28 @@ body.pv-side-collapsed .pv-side-btn .pv-fbtn-badge{position:absolute;top:5px;rig
         ใช้ได้บน <b>Chrome, Edge, Opera, Brave</b> (Safari/Firefox ยังไม่รองรับ) — แนะนำเปิด Dashboard ใน Chrome หรือ Edge แทน
       </div>
 
-      <!-- Instructions -->
-      <div style="margin-top:14px;padding:12px 16px;background:#f8fafc;border-radius:10px;font-size:11.5px;color:#475569;line-height:1.85;border-left:3px solid #3b82f6">
-        <div style="font-weight:800;color:#1e40af;margin-bottom:6px;font-size:12px">💡 วิธีใช้</div>
-        <div><b>1️⃣</b> กดปุ่ม <b>"เริ่ม Auto-Sync"</b> → เลือกไฟล์ Excel จากเครื่อง</div>
-        <div><b>2️⃣</b> Browser จะถาม permission → กด <b>"View files"</b> หรือ <b>"Allow"</b></div>
-        <div><b>3️⃣</b> ไปแก้ Excel ในโปรแกรม Excel ตามปกติ → กด <b>Ctrl+S</b> เพื่อ Save</div>
-        <div><b>4️⃣</b> Dashboard refresh ข้อมูลเองภายใน 3 วินาที 🎉</div>
-        <div style="margin-top:8px;padding-top:8px;border-top:1px dashed #cbd5e1;color:#94a3b8">
-          <b>⚠️ ข้อจำกัด:</b> ต้องเปิด tab Dashboard ค้างไว้ • ถ้า reload หน้าหรือปิด tab → ต้องเลือกไฟล์ใหม่ • Sync ทำงานบนเครื่องคุณคนเดียว ไม่ sync ข้าม PC
-        </div>
+      <!-- V30.7: ช่อง upload ไฟล์ รวมมาไว้ในกล่องเดียวกับ Auto-Sync -->
+      <div class="pv-or-sep"><span>หรือ อัปโหลดไฟล์ครั้งเดียว</span></div>
+      <div class="drop-zone" id="drop-zone" onclick="document.getElementById('file-in').click()"
+        ondragover="event.preventDefault();this.classList.add('drag')"
+        ondragleave="this.classList.remove('drag')"
+        ondrop="ev=>{ev.preventDefault();document.getElementById('drop-zone').classList.remove('drag');processFile(ev.dataTransfer.files[0])}">
+        <div style="font-size:34px;margin-bottom:6px">📤</div>
+        <div style="font-weight:700;color:#1e293b;margin-bottom:4px">ลากไฟล์มาวางที่นี่ หรือ คลิกเพื่อเลือก</div>
+        <div style="font-size:12px;color:#94a3b8">รองรับ .xlsx / .xls / .csv — ตรวจจับคอลัมน์อัตโนมัติ</div>
+        <input type="file" id="file-in" accept=".xlsx,.xls,.csv" style="display:none" onchange="processFile(this.files[0])">
       </div>
+      <div id="umsg" style="display:none"></div>
+      <details class="pv-howto">
+        <summary>วิธีใช้ Auto-Sync</summary>
+        <div class="pv-howto-body">
+          <div><b>1️⃣</b> กด <b>"เริ่ม Auto-Sync"</b> → เลือกไฟล์ Excel</div>
+          <div><b>2️⃣</b> Browser ถาม permission → กด <b>"View files" / "Allow"</b></div>
+          <div><b>3️⃣</b> แก้ Excel แล้วกด <b>Ctrl+S</b></div>
+          <div><b>4️⃣</b> Dashboard refresh เองใน 3 วินาที 🎉</div>
+          <div style="margin-top:6px;padding-top:6px;border-top:1px dashed #cbd5e1;color:#94a3b8">⚠️ ต้องเปิด tab ค้างไว้ • reload/ปิด tab ต้องเลือกไฟล์ใหม่ • ทำงานบนเครื่องคุณเท่านั้น</div>
+        </div>
+      </details>
     </div>
     <!-- ══ END AUTO-SYNC ════════════════════════════════════════════════ -->
 
@@ -1195,7 +1217,6 @@ body.pv-side-collapsed .pv-side-btn .pv-fbtn-badge{position:absolute;top:5px;rig
       <div class="card-title" style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:6px">
         🌐 เชื่อมต่อ Google Sheets (Live Sync)
         <span style="font-size:10px;font-weight:600;background:#ede9fe;color:#6d28d9;padding:2px 8px;border-radius:10px">NEW · V25</span>
-        <span style="font-size:10px;font-weight:700;background:#dcfce7;color:#166534;padding:2px 8px;border-radius:10px">build 2026-05-30h · UTF-8 fix</span>
       </div>
       <div style="font-size:12px;color:#64748b;margin-bottom:14px;line-height:1.6">
         วาง <b>ลิงก์ Google Sheets</b> หรือ <b>File ID</b> → Dashboard ดึงข้อมูลและ refresh เองทุก 60 วินาที (ต้องตั้ง Sheet เป็น <b>Anyone with the link</b>)
@@ -1208,38 +1229,18 @@ body.pv-side-collapsed .pv-side-btn .pv-fbtn-badge{position:absolute;top:5px;rig
         <button id="gsheet-stop-btn" onclick="stopGoogleSheet()" style="display:none;background:#fff;color:#dc2626;border:1.5px solid #fca5a5;border-radius:10px;padding:10px 18px;font-size:13px;font-weight:800;cursor:pointer;font-family:inherit">⏸ หยุด</button>
       </div>
       <div id="gsheet-meta" style="display:none;font-size:11px;color:#475569;background:#faf5ff;border:1px solid #e9d5ff;border-radius:10px;padding:9px 12px;font-weight:600"></div>
-      <div style="margin-top:10px;font-size:11px;color:#94a3b8;line-height:1.7">
-        💡 <b>วิธีตั้งค่า:</b> เปิด Google Sheet → <b>Share</b> → <b>Anyone with the link</b> = Viewer → คัดลอกลิงก์มาวาง<br>
-        ✅ <b>แนะนำ (ทนทานสุด):</b> File → <b>Share</b> → <b>Publish to web</b> → Publish — ช่วยให้ดึงข้อมูลได้แม้เปิดไฟล์แบบ <b>file://</b><br>
-        📑 หลายแท็บ: ใช้ลิงก์ที่มี <b>#gid=…</b> ของแท็บที่ต้องการ<br>
-        ⚠️ ชื่อผู้แก้ไขล่าสุด (Updated By) ต้องใช้ Google Drive API — หากไม่มีจะแสดง <b>Unknown</b>
-      </div>
+      <details class="pv-howto" style="margin-top:10px">
+        <summary>วิธีตั้งค่า Google Sheets</summary>
+        <div class="pv-howto-body" style="border-left-color:#8b5cf6;color:#64748b">
+          💡 เปิด Google Sheet → <b>Share</b> → <b>Anyone with the link</b> = Viewer → คัดลอกลิงก์มาวาง<br>
+          ✅ <b>แนะนำ:</b> File → <b>Share</b> → <b>Publish to web</b> → Publish (ดึงได้แม้เปิดแบบ file://)<br>
+          📑 หลายแท็บ: ใช้ลิงก์ที่มี <b>#gid=…</b><br>
+          ⚠️ Updated By ต้องใช้ Google Drive API — ไม่มีจะแสดง <b>Unknown</b>
+        </div>
+      </details>
     </div>
     <!-- ══ END GOOGLE SHEETS ════════════════════════════════════════════ -->
 
-    <div class="card">
-      <div class="card-title">📂 Dynamic Data Update</div>
-      <div style="font-size:12px;color:#94a3b8;margin-bottom:18px">อัปโหลด Excel / CSV ใหม่ → Dashboard Auto-detect Schema + Refresh ทันที รองรับ Column ใหม่โดยไม่ต้องแก้ Code</div>
-      <div class="drop-zone" id="drop-zone" onclick="document.getElementById('file-in').click()"
-        ondragover="event.preventDefault();this.classList.add('drag')"
-        ondragleave="this.classList.remove('drag')"
-        ondrop="ev=>{ev.preventDefault();document.getElementById('drop-zone').classList.remove('drag');processFile(ev.dataTransfer.files[0])}">
-        <div style="font-size:40px;margin-bottom:8px">📤</div>
-        <div style="font-weight:700;color:#1e293b;margin-bottom:4px">ลากไฟล์มาวางที่นี่ หรือ คลิกเพื่อเลือก</div>
-        <div style="font-size:12px;color:#94a3b8">รองรับ .xlsx / .xls / .csv — Column ใหม่ถูกตรวจจับอัตโนมัติ</div>
-        <input type="file" id="file-in" accept=".xlsx,.xls,.csv" style="display:none" onchange="processFile(this.files[0])">
-      </div>
-      <div id="umsg" style="display:none"></div>
-      <div style="background:#f8fafc;border-radius:12px;padding:16px 18px">
-        <div style="font-weight:800;font-size:13px;margin-bottom:12px">⚙️ กลไก Auto-detect ทำงานอย่างไร</div>
-        <div class="tip-grid">
-          <div class="tip-box"><div style="font-size:18px;margin-bottom:4px">🧠</div><b style="font-size:12px">Fuzzy Column Matching</b><div style="font-size:11px;color:#64748b;margin-top:4px;line-height:1.6">Match จาก keyword บางส่วน — ชื่อ Column ไม่ต้องตรง 100% เช่น "Project Name" / "ชื่อโครง" / "name" → ถูก map เป็น name เดียวกัน</div></div>
-          <div class="tip-box"><div style="font-size:18px;margin-bottom:4px">📦</div><b style="font-size:12px">Extra Column Auto-capture</b><div style="font-size:11px;color:#64748b;margin-top:4px;line-height:1.6">Column ใหม่ที่ไม่ถูก map จะถูกเก็บไว้ใน _extra{} ทุก row และแสดงใน Project Table อัตโนมัติ ไม่หาย</div></div>
-          <div class="tip-box"><div style="font-size:18px;margin-bottom:4px">🔽</div><b style="font-size:12px">Dynamic Filter Generation</b><div style="font-size:11px;color:#64748b;margin-top:4px;line-height:1.6">Filter Dropdown สร้างอัตโนมัติตาม Category Columns ที่ตรวจพบ ไม่ต้องเพิ่ม Filter ด้วยตนเอง</div></div>
-          <div class="tip-box"><div style="font-size:18px;margin-bottom:4px">🛡️</div><b style="font-size:12px">Zero Error / Fallback</b><div style="font-size:11px;color:#64748b;margin-top:4px;line-height:1.6">ถ้า Column ไม่มี → ใช้ fallback value (null / "-" / 0) แทน Dashboard ไม่พัง ทุก Chart ยังทำงานได้ปกติ</div></div>
-        </div>
-      </div>
-    </div>
   </div>
 
   <!-- POWER BI GUIDE -->

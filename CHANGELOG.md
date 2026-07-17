@@ -5,6 +5,14 @@
 
 ---
 
+## [V30.7] — 2026-07 · Data & Sync สะอาดขึ้น (รวม upload + ซ่อนคำอธิบายส่วนเกิน)
+
+### Changed
+- **รวมช่อง upload ไฟล์เข้ากล่องเดียวกับ Auto-Sync** (มี divider "หรือ อัปโหลดไฟล์ครั้งเดียว")
+- **ลบการ์ด "Dynamic Data Update" + กลไก Auto-detect ทำงานอย่างไร** (tip-grid) ออก
+- วิธีใช้ Auto-Sync → พับเก็บใน `<details>` (โชว์เมื่อกด) · Google Sheets: setup notes พับเก็บ, ลบ build badge
+- โล่ง สะอาดตา user-friendly ขึ้น · `#drop-zone`/`#file-in`/`#umsg` + processFile คงเดิม (ยังทำงานปกติ)
+
 ## [V30.6] — 2026-07 · จัด layout: ย้ายเครื่องมือ + status เข้า sidebar
 
 ### Changed
