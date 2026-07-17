@@ -5,6 +5,20 @@
 
 ---
 
+## [V30.6] — 2026-07 · จัด layout: ย้ายเครื่องมือ + status เข้า sidebar
+
+### Changed
+- **Filters + Export/Share ย้ายเข้า sidebar** (กลุ่ม "Tools") · desktop ใช้ที่ sidebar,
+  มือถือยังมีปุ่มบน header (sidebar ซ่อนบนมือถือ) เพื่อไม่ให้เข้าถึงไม่ได้
+- **Live Data Status / Data Completeness / Dashboard Health ย้ายมาฝั่งซ้าย (sidebar)** — โชว์ตอนขยายเมนู, ซ่อนตอนย่อ
+  · exec view (`/exec`) ย้าย tiles กลับขึ้น header อัตโนมัติ (sidebar ถูกซ่อนใน exec)
+- **ซ่อน Schema + Power BI** ออกจากเมนู (sidebar) และ tabs บนหัว
+- **เปลี่ยนชื่อ "Data" → "Data & Sync"**
+
+### Notes
+- `#pv-filters-btn`/badge, `updateFilterBtn()`, id ของ status tiles คงเดิม — logic ไม่แตะ
+- header เหลือ: โลโก้/หัวข้อ · 51 Projects · Updated · Refresh (สะอาดขึ้น)
+
 ## [V30.5] — 2026-07 · Collapsible sidebar + Project List เป็นหน้าแยก
 
 ### Added
